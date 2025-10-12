@@ -65,7 +65,7 @@ nano .env
 
 - `PORT`: Server port (default: 3000)
 - `TERMINAL_SHELL`: Shell to use (default: /bin/zsh)
-- `TERMINAL_ALLOWED_PATH`: Base directory for terminal access (default: /home)
+- `TERMINAL_ALLOWED_PATH`: Base directory for terminal access (default: ~)
 - `SESSION_SECRET`: Secret for session management (change in production!)
 
 ### 3. Development Mode
@@ -106,13 +106,14 @@ NODE_ENV=production
 
 # Terminal Configuration
 TERMINAL_SHELL=/bin/zsh
-TERMINAL_ALLOWED_PATH=/home
+TERMINAL_ALLOWED_PATH=~
 
 # Security
 SESSION_SECRET=your-super-secret-key-here
 
 # CORS (only needed for development)
 CORS_ORIGIN=http://localhost:5173
+NGROK_AUTHTOKEN=your-ngrok-authtoken
 ```
 
 ### Supported Shells
@@ -274,17 +275,6 @@ MIT License - see LICENSE file for details
 ## Support
 
 For issues, questions, or contributions, please open an issue on GitHub.
-
-## Roadmap
-
-- [ ] User authentication system
-- [ ] Session persistence
-- [ ] Command history search
-- [ ] File upload/download
-- [ ] Multiple user support with RBAC
-- [ ] Terminal recording/playback
-- [ ] Customizable key bindings
-- [ ] Plugin system
 
 ## Acknowledgments
 

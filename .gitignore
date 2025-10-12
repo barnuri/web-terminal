@@ -44,3 +44,7 @@ Thumbs.db
 # Misc
 *.tsbuildinfo
 .eslintcache
+
+# Cloudflare Tunnel
+.cloudflared/credentials.json
+cloudflare-tunnel.yml
