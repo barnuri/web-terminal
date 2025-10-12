@@ -130,7 +130,7 @@ export class TerminalService {
   private validatePath(allowedPath: string): string {
     try {
       // Resolve and normalize the path
-      const resolvedPath = path.resolve(allowedPath.replace("~", os.homedir()));
+      const resolvedPath = path.resolve(allowedPath.replace('~', os.homedir()));
 
       // Check if path exists and is accessible
       const fs = require('fs');

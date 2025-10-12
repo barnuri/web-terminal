@@ -158,6 +158,7 @@ web-terminal/
 ## Questions?
 
 Open an issue for:
+
 - Bug reports
 - Feature requests
 - Questions about implementation

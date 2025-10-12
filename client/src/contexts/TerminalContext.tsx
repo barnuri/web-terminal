@@ -80,8 +80,7 @@ export const TerminalProvider: React.FC<TerminalProviderProps> = ({ children }) 
       // If the active tab was removed, switch to another tab
       if (activeTabId === id) {
         const removedIndex = prevTabs.findIndex((tab) => tab.id === id);
-        const newActiveTab =
-          newTabs[removedIndex] || newTabs[removedIndex - 1] || newTabs[0];
+        const newActiveTab = newTabs[removedIndex] || newTabs[removedIndex - 1] || newTabs[0];
         setActiveTabId(newActiveTab.id);
       }
 
@@ -94,9 +93,7 @@ export const TerminalProvider: React.FC<TerminalProviderProps> = ({ children }) 
   };
 
   const updateTabTitle = (id: string, title: string) => {
-    setTabs((prevTabs) =>
-      prevTabs.map((tab) => (tab.id === id ? { ...tab, title } : tab))
-    );
+    setTabs((prevTabs) => prevTabs.map((tab) => (tab.id === id ? { ...tab, title } : tab)));
   };
 
   return (

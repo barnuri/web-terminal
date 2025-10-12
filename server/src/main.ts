@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
@@ -6,7 +6,6 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import path from 'path';
 import fs from 'fs';
 import ngrok from '@ngrok/ngrok';
-
 
 async function bootstrap() {
   const envPath = path.resolve(__dirname, '../.env');
@@ -45,8 +44,13 @@ async function bootstrap() {
   }
 
   await app.listen(port);
-  ngrok.connect({ addr: port, authtoken: process.env.NGROK_AUTHTOKEN })
-	.then(listener => console.log(`Ingress established at: ${listener.url()}`));
+  if (process.env.NGROK_AUTHTOKEN) {
+    ngrok
+      .connect({ addr: port, authtoken: process.env.NGROK_AUTHTOKEN })
+      .then((listener) => console.log(`Ingress established at: ${listener.url()}`));
+  } else {
+    logger.warn('NGROK_AUTHTOKEN is not set. Skipping ngrok setup.');
+  }
 
   logger.log(`Application is running on: http://localhost:${port}`);
   logger.log(`Environment: ${nodeEnv}`);

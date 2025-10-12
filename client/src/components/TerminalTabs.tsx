@@ -39,10 +39,7 @@ const TerminalTabs: React.FC = () => {
       </div>
       <div className="tabs-content">
         {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            className={`tab-pane ${activeTabId === tab.id ? 'active' : ''}`}
-          >
+          <div key={tab.id} className={`tab-pane ${activeTabId === tab.id ? 'active' : ''}`}>
             {activeTabId === tab.id && (
               <Terminal
                 sessionId={tab.sessionId}

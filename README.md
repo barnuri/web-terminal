@@ -119,6 +119,7 @@ NGROK_AUTHTOKEN=your-ngrok-authtoken
 ### Supported Shells
 
 The application supports any shell available on your system:
+
 - `/bin/bash`
 - `/bin/zsh` (default)
 - `/bin/sh`
@@ -128,6 +129,7 @@ The application supports any shell available on your system:
 ### Access Control
 
 The `TERMINAL_ALLOWED_PATH` variable restricts terminal access to a specific directory and its subdirectories. For example:
+
 - `/home` - Access to all user home directories
 - `/home/username` - Access only to a specific user's directory
 - `/` - Full system access (not recommended for production)
@@ -175,11 +177,13 @@ The `TERMINAL_ALLOWED_PATH` variable restricts terminal access to a specific dir
 ### WebSocket Events
 
 **Client → Server:**
+
 - `create-session`: Create a new terminal session
 - `resize`: Resize terminal dimensions
 - `input`: Send input to terminal
 
 **Server → Client:**
+
 - `session-created`: Session successfully created
 - `output`: Terminal output data
 - `error`: Error message
@@ -248,12 +252,14 @@ cd client && npm test
 ## Technologies Used
 
 ### Backend
+
 - **NestJS**: Progressive Node.js framework
 - **Socket.IO**: Real-time WebSocket communication
 - **node-pty**: Pseudoterminal bindings
 - **TypeScript**: Type-safe development
 
 ### Frontend
+
 - **React 18**: Modern React with hooks
 - **xterm.js**: Terminal emulator
 - **Socket.IO Client**: WebSocket client

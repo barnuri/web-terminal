@@ -129,10 +129,7 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   @SubscribeMessage('input')
-  handleInput(
-    @MessageBody() payload: InputPayload,
-    @ConnectedSocket() client: Socket,
-  ) {
+  handleInput(@MessageBody() payload: InputPayload, @ConnectedSocket() client: Socket) {
     const { sessionId, data } = payload;
 
     if (!sessionId || data === undefined) {
@@ -166,10 +163,7 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   @SubscribeMessage('resize')
-  handleResize(
-    @MessageBody() payload: ResizePayload,
-    @ConnectedSocket() client: Socket,
-  ) {
+  handleResize(@MessageBody() payload: ResizePayload, @ConnectedSocket() client: Socket) {
     const { sessionId, cols, rows } = payload;
 
     if (!sessionId || !cols || !rows) {
