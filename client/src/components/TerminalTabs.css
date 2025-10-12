@@ -1,0 +1,140 @@
+.terminal-tabs-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.tabs-header {
+  display: flex;
+  align-items: center;
+  background-color: var(--tabs-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 8px;
+  min-height: 40px;
+  gap: 4px;
+}
+
+.tabs-list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tabs-list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabs-list::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 2px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--tab-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  max-width: 200px;
+  user-select: none;
+}
+
+.tab:hover {
+  background-color: var(--tab-hover-bg);
+}
+
+.tab.active {
+  background-color: var(--tab-active-bg);
+  border-bottom-color: var(--tab-active-bg);
+}
+
+.tab-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-color);
+}
+
+.tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.tab-close:hover:not(:disabled) {
+  background-color: var(--button-hover-bg);
+  color: var(--text-color);
+}
+
+.tab-close:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.new-tab-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  background-color: var(--tab-bg);
+  color: var(--text-color);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.new-tab-button:hover {
+  background-color: var(--button-hover-bg);
+  border-color: var(--border-hover-color);
+}
+
+.new-tab-button:active {
+  transform: scale(0.95);
+}
+
+.tabs-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--terminal-bg);
+}
+
+.tab-pane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}

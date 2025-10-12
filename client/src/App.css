@@ -1,0 +1,138 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme='dark'] {
+  --bg-color: #1e1e1e;
+  --header-bg: #252526;
+  --tabs-bg: #2d2d30;
+  --tab-bg: #2d2d30;
+  --tab-hover-bg: #383838;
+  --tab-active-bg: #1e1e1e;
+  --terminal-bg: #1e1e1e;
+  --text-color: #cccccc;
+  --text-secondary: #969696;
+  --border-color: #3e3e42;
+  --border-hover-color: #555555;
+  --button-bg: #2d2d30;
+  --button-hover-bg: #383838;
+  --scrollbar-thumb: #424242;
+}
+
+[data-theme='light'] {
+  --bg-color: #ffffff;
+  --header-bg: #f3f3f3;
+  --tabs-bg: #ececec;
+  --tab-bg: #ececec;
+  --tab-hover-bg: #e0e0e0;
+  --tab-active-bg: #ffffff;
+  --terminal-bg: #ffffff;
+  --text-color: #383a42;
+  --text-secondary: #696c77;
+  --border-color: #d4d4d4;
+  --border-hover-color: #b0b0b0;
+  --button-bg: #ececec;
+  --button-hover-bg: #e0e0e0;
+  --scrollbar-thumb: #c0c0c0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-color);
+}
+
+.app-header {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 16px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  color: var(--text-color);
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  user-select: none;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover-color);
+}
+
+/* Selection styling */
+::selection {
+  background-color: rgba(100, 100, 255, 0.3);
+}
+
+/* Focus styling */
+button:focus-visible {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+}
