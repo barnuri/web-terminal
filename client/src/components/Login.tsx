@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Login.css';
 
 const Login: React.FC = () => {
-  const { login, error, availableProviders } = useAuth();
+  const navigate = useNavigate();
+  const { login, error, availableProviders, isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    // If already authenticated, redirect to main app
+    if (!isLoading && isAuthenticated) {
+      console.log('User is already authenticated, redirecting to main app');
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   return (
     <div className="login-container">

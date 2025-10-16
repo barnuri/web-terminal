@@ -73,6 +73,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
+      // First, get the stored token
+      const storedToken = localStorage.getItem('jwt_token');
+
       // Check if auth is enabled and get authentication status
       const statusData = await authApi.getStatus();
 
@@ -102,9 +105,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       // Check if the server says we're authenticated (token was valid)
-      if (statusData.authenticated && statusData.user) {
+      if (statusData.authenticated && statusData.user && storedToken) {
         // Server confirmed authentication - use server data
-        const storedToken = localStorage.getItem('jwt_token');
+        console.log('Server confirmed authentication:', statusData.user);
         setTokenState(storedToken);
         setUser(statusData.user);
         setIsAuthenticated(true);
@@ -114,7 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       // If we reach here, either no token or token is invalid
-      // Clear any invalid token
+      console.log('No valid authentication found, clearing token');
       localStorage.removeItem('jwt_token');
       setTokenState(null);
       setIsAuthenticated(false);

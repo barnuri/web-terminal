@@ -12,45 +12,58 @@ const OAuthCallback: React.FC = () => {
     const token = params.get('token');
     const error = params.get('error');
 
+    console.log('OAuth callback received:', { token: !!token, error });
+
     if (error) {
+      console.error('OAuth error:', decodeURIComponent(error));
       setError(decodeURIComponent(error));
       navigate('/login');
     } else if (token) {
+      console.log('Setting token and redirecting to main app');
       setToken(token);
-      navigate('/');
+      navigate('/', { replace: true });
     } else {
+      console.warn('No token or error in OAuth callback');
       setError('No token received from OAuth provider');
       navigate('/login');
     }
   }, [navigate, setToken, setError]);
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      background: 'var(--bg-primary)',
-    }}>
-      <div style={{
-        textAlign: 'center',
-        color: 'var(--text-primary)',
-      }}>
-        <div style={{
-          fontSize: '18px',
-          marginBottom: '16px',
-        }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        background: 'var(--bg-primary)',
+      }}
+    >
+      <div
+        style={{
+          textAlign: 'center',
+          color: 'var(--text-primary)',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '18px',
+            marginBottom: '16px',
+          }}
+        >
           Completing authentication...
         </div>
-        <div style={{
-          width: '40px',
-          height: '40px',
-          margin: '0 auto',
-          border: '3px solid var(--border-color)',
-          borderTopColor: 'var(--accent-color)',
-          borderRadius: '50%',
-          animation: 'spin 0.8s linear infinite',
-        }} />
+        <div
+          style={{
+            width: '40px',
+            height: '40px',
+            margin: '0 auto',
+            border: '3px solid var(--border-color)',
+            borderTopColor: 'var(--accent-color)',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+          }}
+        />
       </div>
     </div>
   );

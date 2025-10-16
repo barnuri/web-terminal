@@ -10,7 +10,9 @@ import OAuthCallback from './components/OAuthCallback';
 import './App.css';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading, authEnabled } = useAuth();
+  const { isAuthenticated, isLoading, authEnabled, user } = useAuth();
+
+  console.log('PrivateRoute state:', { isAuthenticated, isLoading, authEnabled, user });
 
   if (isLoading) {
     return (
@@ -29,9 +31,16 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }
 
   if (authEnabled && !isAuthenticated) {
+    console.log(
+      'Redirecting to login: authEnabled =',
+      authEnabled,
+      'isAuthenticated =',
+      isAuthenticated,
+    );
     return <Navigate to="/login" replace />;
   }
 
+  console.log('Allowing access to main app');
   return <>{children}</>;
 };
 
@@ -88,6 +97,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/login/callback" element={<OAuthCallback />} />
+            <Route path="/auth/callback" element={<OAuthCallback />} />
             <Route
               path="/"
               element={
