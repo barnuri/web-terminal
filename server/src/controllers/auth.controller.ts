@@ -13,6 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthService, UrlService } from '../services';
+import { OptionalAuthGuard } from '../auth/guards/optional-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -57,11 +58,11 @@ export class AuthController {
       const token = await this.authService.handleOAuthCallback(req.user);
       const frontendUrl = this.getFrontendUrl(req);
       // Redirect to frontend with token
-      res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+      res.redirect(`${frontendUrl}/login/callback?token=${token}`);
     } catch (error) {
       this.logger.error(`Google OAuth callback failed: ${error.message}`);
       const frontendUrl = this.getFrontendUrl(req);
-      res.redirect(`${frontendUrl}/auth/callback?error=${encodeURIComponent(error.message)}`);
+      res.redirect(`${frontendUrl}/login/callback?error=${encodeURIComponent(error.message)}`);
     }
   }
 
@@ -102,11 +103,11 @@ export class AuthController {
     try {
       const token = await this.authService.handleOAuthCallback(req.user);
       const frontendUrl = this.getFrontendUrl(req);
-      res.redirect(`${frontendUrl}/auth/callback?token=${token}`);
+      res.redirect(`${frontendUrl}/login/callback?token=${token}`);
     } catch (error) {
       this.logger.error(`GitHub OAuth callback failed: ${error.message}`);
       const frontendUrl = this.getFrontendUrl(req);
-      res.redirect(`${frontendUrl}/auth/callback?error=${encodeURIComponent(error.message)}`);
+      res.redirect(`${frontendUrl}/login/callback?error=${encodeURIComponent(error.message)}`);
     }
   }
 
@@ -120,6 +121,7 @@ export class AuthController {
   }
 
   @Get('status')
+  @UseGuards(OptionalAuthGuard)
   getStatus(@Req() req: any, @Res({ passthrough: true }) res: Response) {
     // Prevent caching to avoid 304 responses
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');

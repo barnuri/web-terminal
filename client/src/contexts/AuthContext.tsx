@@ -11,6 +11,7 @@ interface User {
 interface AvailableProviders {
   google: boolean;
   github: boolean;
+  staticSecret?: boolean;
 }
 
 interface AuthContextType {
@@ -50,6 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [availableProviders, setAvailableProviders] = useState<AvailableProviders>({
     google: false,
     github: false,
+    staticSecret: false,
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -71,11 +73,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      // Check if auth is enabled
+      // Check if auth is enabled and get authentication status
       const statusData = await authApi.getStatus();
 
       setAuthEnabled(statusData.authEnabled);
-      setAvailableProviders(statusData.availableProviders || { google: false, github: false });
+      setAvailableProviders(
+        statusData.availableProviders || { google: false, github: false, staticSecret: false },
+      );
 
       // If auth is disabled, we're done
       if (!statusData.authEnabled) {
@@ -85,7 +89,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       // If auth is enabled but no providers are configured, show error
-      if (!statusData.availableProviders?.google && !statusData.availableProviders?.github) {
+      if (
+        !statusData.availableProviders?.google &&
+        !statusData.availableProviders?.github &&
+        !statusData.availableProviders?.staticSecret
+      ) {
         setError(
           'Authentication is enabled but no OAuth providers are configured. Please contact your administrator.',
         );
@@ -93,17 +101,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      // Check for stored token
-      const storedToken = localStorage.getItem('jwt_token');
-      if (!storedToken) {
+      // Check if the server says we're authenticated (token was valid)
+      if (statusData.authenticated && statusData.user) {
+        // Server confirmed authentication - use server data
+        const storedToken = localStorage.getItem('jwt_token');
+        setTokenState(storedToken);
+        setUser(statusData.user);
+        setIsAuthenticated(true);
+        setError(null);
         setIsLoading(false);
         return;
       }
 
-      // Verify token is still valid
-      setToken(storedToken);
+      // If we reach here, either no token or token is invalid
+      // Clear any invalid token
+      localStorage.removeItem('jwt_token');
+      setTokenState(null);
+      setIsAuthenticated(false);
+      setUser(null);
+      setIsLoading(false);
     } catch (error) {
       console.error('Auth status check failed:', error);
+      // If auth check fails, clear token and require login
+      localStorage.removeItem('jwt_token');
+      setTokenState(null);
+      setIsAuthenticated(false);
+      setUser(null);
       setError(error instanceof Error ? error.message : 'Failed to check authentication status');
       setIsLoading(false);
     }
@@ -123,9 +146,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         provider: payload.provider,
       });
       setIsAuthenticated(true);
+      setError(null); // Clear any previous errors
     } catch (error) {
       console.error('Failed to decode token:', error);
       setError('Invalid token format');
+      // If token is invalid, treat as not authenticated
+      setIsAuthenticated(false);
+      setUser(null);
+      localStorage.removeItem('jwt_token');
     }
     setIsLoading(false);
   };

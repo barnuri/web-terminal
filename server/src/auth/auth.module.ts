@@ -8,6 +8,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { GitHubStrategy } from './strategies/github.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { WsAuthGuard } from './guards/ws-auth.guard';
+import { OptionalAuthGuard } from './guards/optional-auth.guard';
 
 @Module({
   imports: [
@@ -25,8 +26,16 @@ import { WsAuthGuard } from './guards/ws-auth.guard';
       }),
     }),
   ],
-  providers: [AuthService, UrlService, GoogleStrategy, GitHubStrategy, JwtAuthGuard, WsAuthGuard],
+  providers: [
+    AuthService,
+    UrlService,
+    GoogleStrategy,
+    GitHubStrategy,
+    JwtAuthGuard,
+    WsAuthGuard,
+    OptionalAuthGuard,
+  ],
   controllers: [AuthController],
-  exports: [AuthService, UrlService, JwtAuthGuard, WsAuthGuard],
+  exports: [AuthService, UrlService, JwtAuthGuard, WsAuthGuard, OptionalAuthGuard],
 })
 export class AuthModule {}

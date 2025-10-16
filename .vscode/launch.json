@@ -21,6 +21,7 @@
             "sourceMaps": true,
             "stopOnEntry": false,
             "console": "integratedTerminal",
+            "preLaunchTask": "build-client"
         }
     ]
 }

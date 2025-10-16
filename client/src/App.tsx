@@ -14,16 +14,16 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
   if (isLoading) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        background: 'var(--bg-primary)',
-      }}>
-        <div style={{ textAlign: 'center', color: 'var(--text-primary)' }}>
-          Loading...
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          background: 'var(--bg-primary)',
+        }}
+      >
+        <div style={{ textAlign: 'center', color: 'var(--text-primary)' }}>Loading...</div>
       </div>
     );
   }
@@ -62,9 +62,7 @@ const MainApp: React.FC = () => {
           <div className="header-right">
             {isAuthenticated && user && (
               <div className="user-info">
-                {user.picture && (
-                  <img src={user.picture} alt={user.name} className="user-avatar" />
-                )}
+                {user.picture && <img src={user.picture} alt={user.name} className="user-avatar" />}
                 <span className="user-name">{user.name}</span>
                 <button onClick={logout} className="logout-button">
                   Logout
@@ -89,7 +87,7 @@ const App: React.FC = () => {
         <TerminalProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/auth/callback" element={<OAuthCallback />} />
+            <Route path="/login/callback" element={<OAuthCallback />} />
             <Route
               path="/"
               element={

@@ -4,7 +4,7 @@ import { join } from 'path';
 
 @Controller()
 export class SpaController {
-  @Get(['/', '/login', '/auth/callback'])
+  @Get(['/', '/login', '/login/callback'])
   serveSpa(@Res() res: Response): void {
     const indexPath = join(__dirname, '..', '..', '..', 'client', 'dist', 'index.html');
     res.sendFile(indexPath);
