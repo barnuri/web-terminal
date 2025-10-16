@@ -1,2 +1,3 @@
-export * from './auth.controller';
-export * from './spa.controller';
+export { AuthController } from './auth.controller';
+export { SpaController } from './spa.controller';
+export { TerminalController } from './terminal.controller';

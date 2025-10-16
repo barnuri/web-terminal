@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import api from '../utils/api';
 import './FolderShortcuts.css';
 
 interface FolderShortcutsProps {
@@ -9,35 +9,22 @@ interface FolderShortcutsProps {
 const FolderShortcuts: React.FC<FolderShortcutsProps> = ({ onCommand }) => {
   const [shortcuts, setShortcuts] = useState<string[]>([]);
   const [isVisible, setIsVisible] = useState(false);
-  const socketRef = React.useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Connect to WebSocket
-    const socket = io(getSocketUrl(), {
-      transports: ['websocket', 'polling'],
-    });
-
-    socketRef.current = socket;
-
-    socket.on('connect', () => {
-      console.log('FolderShortcuts socket connected');
-      // Request folder shortcuts
-      socket.emit('get-folder-shortcuts');
-    });
-
-    socket.on('folder-shortcuts', ({ shortcuts: receivedShortcuts }: { shortcuts: string[] }) => {
-      console.log('Received folder shortcuts:', receivedShortcuts);
-      setShortcuts(receivedShortcuts);
-      setIsVisible(receivedShortcuts.length > 0);
-    });
-
-    socket.on('error', ({ message }: { message: string }) => {
-      console.error('FolderShortcuts error:', message);
-    });
-
-    return () => {
-      socket.disconnect();
+    // Fetch folder shortcuts via HTTP
+    const fetchShortcuts = async () => {
+      try {
+        const response = await api.get<{ shortcuts: string[] }>('/api/terminal/folder-shortcuts');
+        const receivedShortcuts = response.data.shortcuts;
+        console.log('Received folder shortcuts:', receivedShortcuts);
+        setShortcuts(receivedShortcuts);
+        setIsVisible(receivedShortcuts.length > 0);
+      } catch (error) {
+        console.error('Failed to fetch folder shortcuts:', error);
+      }
     };
+
+    fetchShortcuts();
   }, []);
 
   const getFolderName = (path: string): string => {
@@ -100,13 +87,6 @@ const FolderShortcuts: React.FC<FolderShortcutsProps> = ({ onCommand }) => {
       </div>
     </div>
   );
-};
-
-const getSocketUrl = (): string => {
-  if (import.meta.env.DEV) {
-    return '/';
-  }
-  return window.location.origin;
 };
 
 export default FolderShortcuts;

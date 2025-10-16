@@ -2,8 +2,7 @@ import React, { useRef } from 'react';
 import { useTerminal } from '../contexts/TerminalContext';
 import Terminal, { TerminalHandle } from './Terminal';
 import VirtualKeyboard from './VirtualKeyboard';
-import FolderShortcuts from './FolderShortcuts';
-import FavoriteCommands from './FavoriteCommands';
+import QuickAccessPanel from './QuickAccessPanel';
 import './TerminalTabs.css';
 
 const TerminalTabs: React.FC = () => {
@@ -24,7 +23,7 @@ const TerminalTabs: React.FC = () => {
     if (activeTab) {
       const terminalRef = terminalRefs.current.get(activeTab.id);
       if (terminalRef) {
-        terminalRef.write(key);
+        terminalRef.sendInput(key);
       }
     }
   };
@@ -43,7 +42,7 @@ const TerminalTabs: React.FC = () => {
     if (activeTab) {
       const terminalRef = terminalRefs.current.get(activeTab.id);
       if (terminalRef) {
-        terminalRef.write(command);
+        terminalRef.sendInput(command);
       }
     }
   };
@@ -123,8 +122,7 @@ const TerminalTabs: React.FC = () => {
         ))}
       </div>
       <VirtualKeyboard onKeyPress={handleVirtualKeyPress} />
-      <FolderShortcuts onCommand={handleCommand} />
-      <FavoriteCommands onCommand={handleCommand} />
+      <QuickAccessPanel onCommand={handleCommand} />
     </div>
   );
 };

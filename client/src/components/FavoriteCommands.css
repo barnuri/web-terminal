@@ -1,6 +1,6 @@
 .favorite-commands {
   position: fixed;
-  top: 130px;
+  top: 190px;
   right: 20px;
   background: var(--header-bg);
   border: 1px solid var(--border-color);
@@ -144,7 +144,7 @@
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .favorite-commands {
-    top: 116px;
+    top: 166px;
     right: 12px;
     max-width: 250px;
     min-width: 180px;
@@ -181,7 +181,7 @@
 /* Small mobile screens */
 @media (max-width: 480px) {
   .favorite-commands {
-    top: 102px;
+    top: 142px;
     right: 8px;
     left: 8px;
     max-width: none;
@@ -199,7 +199,7 @@
 /* Landscape mobile */
 @media (max-height: 500px) and (orientation: landscape) {
   .favorite-commands {
-    top: 102px;
+    top: 142px;
     max-height: 60vh;
     overflow-y: auto;
   }

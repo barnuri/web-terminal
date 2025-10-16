@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import api from '../utils/api';
 import './FavoriteCommands.css';
 
 interface FavoriteCommandsProps {
@@ -9,35 +9,22 @@ interface FavoriteCommandsProps {
 const FavoriteCommands: React.FC<FavoriteCommandsProps> = ({ onCommand }) => {
   const [commands, setCommands] = useState<string[]>([]);
   const [isVisible, setIsVisible] = useState(false);
-  const socketRef = React.useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Connect to WebSocket
-    const socket = io(getSocketUrl(), {
-      transports: ['websocket', 'polling'],
-    });
-
-    socketRef.current = socket;
-
-    socket.on('connect', () => {
-      console.log('FavoriteCommands socket connected');
-      // Request favorite commands
-      socket.emit('get-favorite-commands');
-    });
-
-    socket.on('favorite-commands', ({ commands: receivedCommands }: { commands: string[] }) => {
-      console.log('Received favorite commands:', receivedCommands);
-      setCommands(receivedCommands);
-      setIsVisible(receivedCommands.length > 0);
-    });
-
-    socket.on('error', ({ message }: { message: string }) => {
-      console.error('FavoriteCommands error:', message);
-    });
-
-    return () => {
-      socket.disconnect();
+    // Fetch favorite commands via HTTP
+    const fetchCommands = async () => {
+      try {
+        const response = await api.get<{ commands: string[] }>('/api/terminal/favorite-commands');
+        const receivedCommands = response.data.commands;
+        console.log('Received favorite commands:', receivedCommands);
+        setCommands(receivedCommands);
+        setIsVisible(receivedCommands.length > 0);
+      } catch (error) {
+        console.error('Failed to fetch favorite commands:', error);
+      }
     };
+
+    fetchCommands();
   }, []);
 
   const getCommandLabel = (command: string): string => {
@@ -102,13 +89,6 @@ const FavoriteCommands: React.FC<FavoriteCommandsProps> = ({ onCommand }) => {
       </div>
     </div>
   );
-};
-
-const getSocketUrl = (): string => {
-  if (import.meta.env.DEV) {
-    return '/';
-  }
-  return window.location.origin;
 };
 
 export default FavoriteCommands;

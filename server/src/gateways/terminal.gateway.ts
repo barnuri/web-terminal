@@ -252,36 +252,6 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
   }
 
-  @SubscribeMessage('get-folder-shortcuts')
-  handleGetFolderShortcuts(@ConnectedSocket() client: Socket) {
-    try {
-      const shortcuts = this.terminalService.getFolderShortcuts();
-      client.emit('folder-shortcuts', { shortcuts });
-      this.logger.debug(`Sent ${shortcuts.length} folder shortcuts to client ${client.id}`);
-    } catch (error) {
-      this.logger.error(`Failed to get folder shortcuts: ${error.message}`);
-      client.emit('error', {
-        message: 'Failed to get folder shortcuts',
-        details: error.message,
-      });
-    }
-  }
-
-  @SubscribeMessage('get-favorite-commands')
-  handleGetFavoriteCommands(@ConnectedSocket() client: Socket) {
-    try {
-      const commands = this.terminalService.getFavoriteCommands();
-      client.emit('favorite-commands', { commands });
-      this.logger.debug(`Sent ${commands.length} favorite commands to client ${client.id}`);
-    } catch (error) {
-      this.logger.error(`Failed to get favorite commands: ${error.message}`);
-      client.emit('error', {
-        message: 'Failed to get favorite commands',
-        details: error.message,
-      });
-    }
-  }
-
   @SubscribeMessage('reconnect-session')
   handleReconnectSession(
     @MessageBody() payload: { sessionId: string },
