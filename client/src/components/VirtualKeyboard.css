@@ -1,0 +1,225 @@
+.virtual-keyboard {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--header-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 12px;
+  z-index: 1000;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.keyboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.keyboard-modifiers {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.keyboard-modifier {
+  flex: 1;
+  min-height: 44px;
+  padding: 8px 16px;
+  background: var(--button-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.keyboard-modifier:active {
+  transform: scale(0.97);
+}
+
+.keyboard-modifier.modifier-active {
+  background: #0078d4;
+  border-color: #0078d4;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.2);
+}
+
+.keyboard-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.keyboard-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color);
+  transition: all 0.2s;
+  border-radius: 6px;
+}
+
+.keyboard-close:hover {
+  background: var(--button-hover-bg);
+}
+
+.keyboard-close:active {
+  transform: scale(0.95);
+}
+
+.keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 8px;
+}
+
+.keyboard-key {
+  min-height: 48px; /* iOS minimum touch target */
+  padding: 8px;
+  background: var(--button-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.keyboard-key:active {
+  background: var(--button-hover-bg);
+  transform: scale(0.95);
+  border-color: var(--border-hover-color);
+}
+
+.keyboard-key.modifier-enabled {
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.15);
+}
+
+.keyboard-key.key-long-press {
+  background: #0078d4;
+  color: #ffffff;
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.3);
+}
+
+.key-wide {
+  grid-column: span 2;
+}
+
+.virtual-keyboard-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  background: var(--header-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.virtual-keyboard-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.virtual-keyboard-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Hide on desktop */
+@media (min-width: 1024px) {
+  .virtual-keyboard-toggle {
+    display: none;
+  }
+}
+
+/* Optimize for tablets */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .keyboard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  }
+
+  .keyboard-key {
+    min-height: 52px;
+    font-size: 15px;
+  }
+}
+
+/* Optimize for mobile */
+@media (max-width: 767px) {
+  .virtual-keyboard {
+    padding: 8px;
+  }
+
+  .keyboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .keyboard-key {
+    min-height: 44px;
+    font-size: 13px;
+    padding: 6px;
+  }
+
+  .keyboard-header {
+    margin-bottom: 8px;
+  }
+}
+
+/* Handle landscape orientation on mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  .virtual-keyboard {
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  .keyboard-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}

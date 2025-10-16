@@ -111,8 +111,6 @@ TERMINAL_ALLOWED_PATH=~
 # Security
 SESSION_SECRET=your-super-secret-key-here
 
-# CORS (only needed for development)
-CORS_ORIGIN=http://localhost:5173
 NGROK_AUTHTOKEN=your-ngrok-authtoken
 ```
 

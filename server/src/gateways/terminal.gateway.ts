@@ -9,11 +9,13 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { TerminalService } from './terminal.service';
+import { TerminalService } from '../services/terminal.service';
 import { ConfigService } from '@nestjs/config';
+import { AuthService } from '../services/auth.service';
 
 interface CreateSessionPayload {
   sessionId: string;
+  cwd?: string;
 }
 
 interface ResizePayload {
@@ -29,12 +31,14 @@ interface InputPayload {
 
 @WebSocketGateway({
   cors: {
-    origin: (origin, callback) => {
+    origin: (_origin, callback) => {
       // In development, allow configured origin
       // In production, implement proper origin validation
       callback(null, true);
     },
     credentials: true,
+    allowedHeaders: '*', // Allow all headers
+    methods: ['GET', 'POST'],
   },
 })
 export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -47,9 +51,37 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
   constructor(
     private terminalService: TerminalService,
     private configService: ConfigService,
+    private authService: AuthService,
   ) {}
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
+    const authEnabled = this.configService.get<boolean>('auth.enabled');
+
+    if (authEnabled) {
+      try {
+        const token = client.handshake.auth.token;
+        if (!token) {
+          this.logger.warn(`Client ${client.id} connected without token`);
+          client.emit('error', { message: 'Authentication required' });
+          client.disconnect();
+          return;
+        }
+
+        // Verify token
+        const user = await this.authService.verifyToken(token);
+
+        // Attach user to socket
+        client.data.user = user;
+
+        this.logger.log(`Client ${client.id} authenticated as ${user.email}`);
+      } catch (error) {
+        this.logger.error(`Authentication failed for client ${client.id}: ${error.message}`);
+        client.emit('error', { message: 'Authentication failed' });
+        client.disconnect();
+        return;
+      }
+    }
+
     this.logger.log(`Client connected: ${client.id}`);
     this.clientSessions.set(client.id, new Set());
   }
@@ -57,12 +89,15 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
 
-    // Clean up all sessions for this client
+    // Update session access time instead of destroying
+    // Sessions will be cleaned up by timeout mechanism
     const sessions = this.clientSessions.get(client.id);
     if (sessions) {
       sessions.forEach((sessionId) => {
-        this.logger.log(`Destroying session ${sessionId} for disconnected client ${client.id}`);
-        this.terminalService.destroySession(sessionId);
+        this.logger.log(
+          `Client ${client.id} disconnected, session ${sessionId} will persist until timeout`,
+        );
+        this.terminalService.updateSessionAccess(sessionId);
       });
       this.clientSessions.delete(client.id);
     }
@@ -73,7 +108,7 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
     @MessageBody() payload: CreateSessionPayload,
     @ConnectedSocket() client: Socket,
   ) {
-    const { sessionId } = payload;
+    const { sessionId, cwd } = payload;
 
     if (!sessionId) {
       this.logger.error('Session ID is required');
@@ -89,7 +124,7 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
         return;
       }
 
-      // Create the terminal session
+      // Create the terminal session with optional custom cwd
       this.terminalService.createSession(
         sessionId,
         client.id,
@@ -107,6 +142,7 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
             sessions.delete(sessionId);
           }
         },
+        cwd,
       );
 
       // Add to client's session list
@@ -138,19 +174,6 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
     }
 
     try {
-      // Verify the session belongs to this client
-      const sessions = this.clientSessions.get(client.id);
-      if (!sessions || !sessions.has(sessionId)) {
-        this.logger.warn(
-          `Client ${client.id} attempted to write to unauthorized session ${sessionId}`,
-        );
-        client.emit('error', {
-          sessionId,
-          message: 'Unauthorized session access',
-        });
-        return;
-      }
-
       this.terminalService.writeToSession(sessionId, data);
     } catch (error) {
       this.logger.error(`Failed to process input for session ${sessionId}: ${error.message}`);
@@ -224,6 +247,87 @@ export class TerminalGateway implements OnGatewayConnection, OnGatewayDisconnect
       client.emit('error', {
         sessionId,
         message: 'Failed to destroy session',
+        details: error.message,
+      });
+    }
+  }
+
+  @SubscribeMessage('get-folder-shortcuts')
+  handleGetFolderShortcuts(@ConnectedSocket() client: Socket) {
+    try {
+      const shortcuts = this.terminalService.getFolderShortcuts();
+      client.emit('folder-shortcuts', { shortcuts });
+      this.logger.debug(`Sent ${shortcuts.length} folder shortcuts to client ${client.id}`);
+    } catch (error) {
+      this.logger.error(`Failed to get folder shortcuts: ${error.message}`);
+      client.emit('error', {
+        message: 'Failed to get folder shortcuts',
+        details: error.message,
+      });
+    }
+  }
+
+  @SubscribeMessage('get-favorite-commands')
+  handleGetFavoriteCommands(@ConnectedSocket() client: Socket) {
+    try {
+      const commands = this.terminalService.getFavoriteCommands();
+      client.emit('favorite-commands', { commands });
+      this.logger.debug(`Sent ${commands.length} favorite commands to client ${client.id}`);
+    } catch (error) {
+      this.logger.error(`Failed to get favorite commands: ${error.message}`);
+      client.emit('error', {
+        message: 'Failed to get favorite commands',
+        details: error.message,
+      });
+    }
+  }
+
+  @SubscribeMessage('reconnect-session')
+  handleReconnectSession(
+    @MessageBody() payload: { sessionId: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const { sessionId } = payload;
+
+    if (!sessionId) {
+      this.logger.error('Session ID is required for reconnect');
+      client.emit('reconnect-failed', { message: 'Session ID is required' });
+      return;
+    }
+
+    try {
+      const session = this.terminalService.getSession(sessionId);
+
+      if (!session) {
+        this.logger.warn(`Session ${sessionId} not found for reconnect`);
+        client.emit('reconnect-failed', { sessionId, message: 'Session not found or expired' });
+        return;
+      }
+
+      // Update session access time
+      this.terminalService.updateSessionAccess(sessionId);
+
+      // Add to client's session list
+      let sessions = this.clientSessions.get(client.id);
+      if (!sessions) {
+        sessions = new Set();
+        this.clientSessions.set(client.id, sessions);
+      }
+      sessions.add(sessionId);
+
+      // Reconnect output handler
+      const originalPty = session.pty;
+      originalPty.onData((data: string) => {
+        client.emit('output', { sessionId, data });
+      });
+
+      client.emit('reconnect-success', { sessionId });
+      this.logger.log(`Client ${client.id} reconnected to session ${sessionId}`);
+    } catch (error) {
+      this.logger.error(`Failed to reconnect session ${sessionId}: ${error.message}`);
+      client.emit('reconnect-failed', {
+        sessionId,
+        message: 'Failed to reconnect to session',
         details: error.message,
       });
     }

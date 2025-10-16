@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as pty from 'node-pty';
 import { IPty } from 'node-pty';
@@ -8,28 +8,48 @@ import * as path from 'path';
 interface TerminalSession {
   pty: IPty;
   clientId: string;
+  userId: string | null;
+  sessionId: string;
   createdAt: Date;
+  lastAccessedAt: Date;
+  expiresAt: Date;
 }
 
 @Injectable()
-export class TerminalService {
+export class TerminalService implements OnModuleInit {
   private readonly logger = new Logger(TerminalService.name);
   private sessions: Map<string, TerminalSession> = new Map();
+  private cleanupInterval: NodeJS.Timeout;
 
   constructor(private configService: ConfigService) {}
+
+  onModuleInit() {
+    // Run cleanup every 5 minutes
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanupExpiredSessions();
+      },
+      5 * 60 * 1000,
+    );
+    this.logger.log('Session cleanup interval started');
+  }
 
   createSession(
     sessionId: string,
     clientId: string,
     onData: (data: string) => void,
     onExit: () => void,
+    customCwd?: string,
   ): void {
     try {
       const shell = this.configService.get<string>('terminal.shell')!;
       const allowedPath = this.configService.get<string>('terminal.allowedPath')!;
 
-      // Validate and normalize the allowed path
-      const cwd = this.validatePath(allowedPath);
+      // Use custom cwd if provided, otherwise use allowedPath
+      const pathToValidate = customCwd || allowedPath;
+
+      // Validate and normalize the path
+      const cwd = this.validatePath(pathToValidate);
 
       this.logger.log(`Creating terminal session ${sessionId} for client ${clientId}`);
       this.logger.debug(`Shell: ${shell}, CWD: ${cwd}`);
@@ -58,10 +78,18 @@ export class TerminalService {
         onExit();
       });
 
+      const now = new Date();
+      const timeout = this.configService.get<number>('terminal.sessionTimeout') || 1800000;
+      const expiresAt = new Date(now.getTime() + timeout);
+
       this.sessions.set(sessionId, {
         pty: ptyProcess,
         clientId,
-        createdAt: new Date(),
+        userId: null, // Will be set by gateway if auth is enabled
+        sessionId,
+        createdAt: now,
+        lastAccessedAt: now,
+        expiresAt,
       });
 
       this.logger.log(`Terminal session ${sessionId} created successfully`);
@@ -146,7 +174,50 @@ export class TerminalService {
     }
   }
 
+  updateSessionAccess(sessionId: string): void {
+    const session = this.sessions.get(sessionId);
+    if (!session) {
+      return;
+    }
+
+    const now = new Date();
+    const timeout = this.configService.get<number>('terminal.sessionTimeout') || 1800000;
+    session.lastAccessedAt = now;
+    session.expiresAt = new Date(now.getTime() + timeout);
+    this.logger.debug(`Updated session ${sessionId} access time`);
+  }
+
+  private cleanupExpiredSessions(): void {
+    const now = new Date();
+    let cleanedCount = 0;
+
+    for (const [sessionId, session] of this.sessions.entries()) {
+      if (session.expiresAt < now) {
+        this.logger.log(`Cleaning up expired session: ${sessionId}`);
+        this.destroySession(sessionId);
+        cleanedCount++;
+      }
+    }
+
+    if (cleanedCount > 0) {
+      this.logger.log(`Cleaned up ${cleanedCount} expired session(s)`);
+    }
+  }
+
+  getFolderShortcuts(): string[] {
+    return this.configService.get<string[]>('terminal.folderShortcuts') || [];
+  }
+
+  getFavoriteCommands(): string[] {
+    return this.configService.get<string[]>('terminal.favoriteCommands') || [];
+  }
+
   onModuleDestroy() {
+    // Clear cleanup interval
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+
     // Clean up all sessions on module destruction
     this.logger.log('Cleaning up all terminal sessions');
     for (const [sessionId, session] of this.sessions.entries()) {
