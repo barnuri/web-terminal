@@ -23,6 +23,7 @@ interface AuthContextType {
   availableProviders: AvailableProviders;
   error: string | null;
   login: (provider: 'google' | 'github') => void;
+  loginWithStaticSecret: (secret: string) => Promise<void>;
   logout: () => void;
   setToken: (token: string) => void;
   setError: (error: string | null) => void;
@@ -166,6 +167,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     window.location.href = `/auth/${provider}`;
   };
 
+  const loginWithStaticSecret = async (secret: string): Promise<void> => {
+    try {
+      setError(null);
+      setIsLoading(true);
+      const response = await authApi.loginWithStaticSecret(secret);
+      setToken(response.token);
+    } catch (error) {
+      console.error('Static secret login failed:', error);
+      setError(error instanceof Error ? error.message : 'Static secret authentication failed');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       // Call server logout endpoint
@@ -193,6 +209,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         availableProviders,
         error,
         login,
+        loginWithStaticSecret,
         logout,
         setToken,
         setError,

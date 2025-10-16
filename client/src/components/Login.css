@@ -128,6 +128,80 @@
   font-size: 13px;
 }
 
+/* Static Secret Form Styles */
+.static-secret-form {
+  width: 100%;
+}
+
+.secret-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.secret-input {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.secret-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.secret-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secret-button {
+  background: var(--accent-color);
+  color: white;
+  border: 1px solid var(--accent-color);
+}
+
+.secret-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.secret-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-divider {
+  position: relative;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.login-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.login-divider span {
+  background: var(--bg-secondary);
+  padding: 0 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  position: relative;
+  z-index: 1;
+}
+
 @media (max-width: 480px) {
   .login-card {
     padding: 32px 24px;
@@ -140,5 +214,9 @@
   .login-button {
     font-size: 14px;
     padding: 10px 20px;
+  }
+
+  .secret-input {
+    font-size: 16px; /* Prevents iOS zoom on focus */
   }
 }

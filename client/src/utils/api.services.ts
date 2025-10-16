@@ -13,6 +13,18 @@ export const authApi = {
     }
   },
 
+  // Static secret login
+  loginWithStaticSecret: async (secret: string): Promise<{ token: string }> => {
+    try {
+      const response = await axiosInstance.post<{ token: string }>('/auth/static-secret', {
+        secret,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
+  },
+
   // Logout (if there's a server endpoint for it)
   logout: async (): Promise<void> => {
     try {
