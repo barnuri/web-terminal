@@ -20,7 +20,7 @@ const QuickAccessPanel: React.FC<QuickAccessPanelProps> = ({ onCommand }) => {
         const response = await api.get<{ commands: string[] }>('/api/terminal/favorite-commands');
         const receivedCommands = response.data.commands;
         console.log('Received favorite commands:', receivedCommands);
-        setCommands(receivedCommands);
+        setCommands(receivedCommands || []);
       } catch (error) {
         console.error('Failed to fetch favorite commands:', error);
       }
@@ -32,7 +32,7 @@ const QuickAccessPanel: React.FC<QuickAccessPanelProps> = ({ onCommand }) => {
         const response = await api.get<{ shortcuts: string[] }>('/api/terminal/folder-shortcuts');
         const receivedShortcuts = response.data.shortcuts;
         console.log('Received folder shortcuts:', receivedShortcuts);
-        setShortcuts(receivedShortcuts);
+        setShortcuts(receivedShortcuts || []);
       } catch (error) {
         console.error('Failed to fetch folder shortcuts:', error);
       }
