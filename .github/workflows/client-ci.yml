@@ -1,0 +1,42 @@
+name: Client CI
+
+on:
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'client/**'
+      - '.github/workflows/client-ci.yml'
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'client/**'
+      - '.github/workflows/client-ci.yml'
+
+jobs:
+  build-and-test:
+    name: Build and Test Client
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Build client
+        run: npm run build
