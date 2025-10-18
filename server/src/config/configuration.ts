@@ -16,7 +16,11 @@ export default () => ({
       .filter((cmd) => cmd.length > 0),
   },
   session: {
-    secret: process.env.SESSION_SECRET || 'change-this-secret-in-production',
+    secret: process.env.SESSION_SECRET || (() => {
+      console.warn('⚠️  WARNING: SESSION_SECRET is not set! Using insecure default. This is NOT safe for production!');
+      console.warn('⚠️  Generate a secure secret with: openssl rand -base64 32');
+      return 'INSECURE-DEFAULT-DO-NOT-USE-IN-PRODUCTION';
+    })(),
   },
   auth: {
     enabled: process.env.AUTH_ENABLE === 'true',
