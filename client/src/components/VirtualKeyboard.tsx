@@ -11,7 +11,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onVisibil
   const [ctrlPressed, setCtrlPressed] = useState(false);
   const [shiftPressed, setShiftPressed] = useState(false);
   const [longPressKey, setLongPressKey] = useState<string | null>(null);
-  const longPressTimer = React.useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = React.useRef<number | null>(null);
   const keyboardRef = useRef<HTMLDivElement>(null);
 
   const keys = [

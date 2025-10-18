@@ -8,7 +8,7 @@ vi.mock('./api', () => ({
     get: vi.fn(),
     post: vi.fn(),
   },
-  handleApiError: vi.fn((error) => error.message || 'API Error'),
+  handleApiError: vi.fn((error: any) => error.message || 'API Error'),
 }));
 
 describe('API Services', () => {
