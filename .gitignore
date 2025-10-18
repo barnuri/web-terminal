@@ -19,6 +19,16 @@ client/dist
 .env.test.local
 .env.production.local
 
+# Configuration files (but keep example files)
+config.yaml
+config.yml
+config.json
+config.local.*
+config.development.*
+config.production.*
+config.staging.*
+config.test.*
+
 # Logs
 logs
 *.log
