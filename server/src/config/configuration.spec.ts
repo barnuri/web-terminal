@@ -135,10 +135,18 @@ describe('Configuration', () => {
   });
 
   describe('session configuration', () => {
-    it('should use default session secret when not set', () => {
+    it('should use default session secret when not set and log warning', () => {
       delete process.env.SESSION_SECRET;
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
       const config = configuration();
-      expect(config.session.secret).toBe('change-this-secret-in-production');
+      expect(config.session.secret).toBe('INSECURE-DEFAULT-DO-NOT-USE-IN-PRODUCTION');
+      expect(warnSpy).toHaveBeenCalledWith(
+        '⚠️  WARNING: SESSION_SECRET is not set! Using insecure default. This is NOT safe for production!'
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        '⚠️  Generate a secure secret with: openssl rand -base64 32'
+      );
+      warnSpy.mockRestore();
     });
 
     it('should use SESSION_SECRET from environment variable', () => {
