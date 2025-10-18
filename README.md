@@ -63,10 +63,40 @@ nano .env
 
 **Important Environment Variables:**
 
+**Server Configuration:**
 - `PORT`: Server port (default: 3000)
+- `NODE_ENV`: Environment mode (development/production)
+
+**Terminal Configuration:**
 - `TERMINAL_SHELL`: Shell to use (default: /bin/zsh)
 - `TERMINAL_ALLOWED_PATH`: Base directory for terminal access (default: ~)
-- `SESSION_SECRET`: Secret for session management (change in production!)
+- `TERMINAL_SESSION_TIMEOUT`: Session timeout in milliseconds (default: 1800000 = 30 min)
+- `TERMINAL_MAX_SESSIONS`: Maximum concurrent sessions (default: 10)
+- `FOLDERS_SHORTCUTS`: Comma-separated list of folder shortcuts
+- `FAV_CMDS`: Comma-separated list of favorite commands
+
+**Security (REQUIRED for production):**
+- `SESSION_SECRET`: Secret for JWT tokens and session management
+  - **CRITICAL**: Must be changed in production!
+  - Generate with: `openssl rand -base64 32`
+
+**Authentication (Optional):**
+- `AUTH_ENABLE`: Enable authentication (true/false, default: false)
+- `AUTH_ALLOWED_EMAILS`: Comma-separated list of allowed email addresses
+- `AUTH_STATIC_SECRET`: Simple password-based authentication (alternative to OAuth)
+
+**OAuth - Google (Optional):**
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
+- `GOOGLE_CALLBACK_URL`: Google OAuth callback URL
+
+**OAuth - GitHub (Optional):**
+- `GITHUB_CLIENT_ID`: GitHub OAuth client ID
+- `GITHUB_CLIENT_SECRET`: GitHub OAuth client secret
+- `GITHUB_CALLBACK_URL`: GitHub OAuth callback URL
+
+**Other:**
+- `NGROK_AUTHTOKEN`: Ngrok auth token for exposing local server (optional)
 
 ### 3. Development Mode
 
@@ -108,11 +138,15 @@ NODE_ENV=production
 TERMINAL_SHELL=/bin/zsh
 TERMINAL_ALLOWED_PATH=~
 
-# Security
-SESSION_SECRET=your-super-secret-key-here
+# Security - CRITICAL: Generate a secure secret!
+# Use: openssl rand -base64 32
+SESSION_SECRET=your-super-secret-key-here-CHANGE-THIS
 
-# CORS (only needed for development)
-CORS_ORIGIN=http://localhost:5173
+# Authentication (Optional - leave AUTH_ENABLE=false if not needed)
+AUTH_ENABLE=false
+AUTH_ALLOWED_EMAILS=user1@example.com,user2@example.com
+
+# Ngrok (Optional)
 NGROK_AUTHTOKEN=your-ngrok-authtoken
 ```
 
@@ -156,13 +190,18 @@ The `TERMINAL_ALLOWED_PATH` variable restricts terminal access to a specific dir
 
 ### For Production Deployment:
 
-1. **Change SESSION_SECRET**: Use a strong, random string
+1. **⚠️ CRITICAL - Change SESSION_SECRET**: 
+   - The default value is INSECURE and will show warnings
+   - Generate a secure secret: `openssl rand -base64 32`
+   - Never commit the actual secret to version control
+   - This secret is used for JWT token signing and session management
 2. **Set TERMINAL_ALLOWED_PATH**: Restrict to necessary directories only
 3. **Use HTTPS**: Always serve over HTTPS in production
-4. **Implement Authentication**: Add user authentication before exposing publicly
-5. **Use Reverse Proxy**: Deploy behind nginx or similar
-6. **Enable Firewall**: Restrict access at network level
-7. **Regular Updates**: Keep dependencies updated
+4. **Implement Authentication**: Enable AUTH_ENABLE=true and configure OAuth or static secret
+5. **Configure Email Allowlist**: Set AUTH_ALLOWED_EMAILS to restrict access
+6. **Use Reverse Proxy**: Deploy behind nginx or similar
+7. **Enable Firewall**: Restrict access at network level
+8. **Regular Updates**: Keep dependencies updated
 
 ### Additional Security Measures:
 

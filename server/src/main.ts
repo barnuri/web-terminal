@@ -6,6 +6,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import path from 'path';
 import fs from 'fs';
 import ngrok from '@ngrok/ngrok';
+import { UrlService } from './services';
 
 async function bootstrap() {
   const envPath = path.resolve(__dirname, '../.env');
@@ -24,7 +25,14 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('port')!;
   const nodeEnv = configService.get<string>('nodeEnv');
-  const corsOrigin = configService.get<string>('cors.origin');
+
+  // Enable CORS with all headers allowed
+  app.enableCors({
+    origin: true, // Allow all origins in development
+    credentials: true,
+    allowedHeaders: '*', // Allow all headers
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  });
 
   // Enable validation
   app.useGlobalPipes(
@@ -34,20 +42,20 @@ async function bootstrap() {
     }),
   );
 
-  // Enable CORS for development
-  if (nodeEnv === 'development') {
-    app.enableCors({
-      origin: corsOrigin,
-      credentials: true,
-    });
-    logger.log(`CORS enabled for origin: ${corsOrigin}`);
-  }
-
   await app.listen(port);
+
+  // Get the UrlService instance to store ngrok URL
+  const urlService = app.get(UrlService);
+
   if (process.env.NGROK_AUTHTOKEN) {
-    ngrok
-      .connect({ addr: port, authtoken: process.env.NGROK_AUTHTOKEN })
-      .then((listener) => console.log(`Ingress established at: ${listener.url()}`));
+    ngrok.connect({ addr: port, authtoken: process.env.NGROK_AUTHTOKEN }).then((listener) => {
+      const ngrokUrl = listener.url();
+      console.log(`Ingress established at: ${ngrokUrl}`);
+      // Store the ngrok URL in the shared service
+      if (ngrokUrl) {
+        urlService.setNgrokUrl(ngrokUrl);
+      }
+    });
   } else {
     logger.warn('NGROK_AUTHTOKEN is not set. Skipping ngrok setup.');
   }

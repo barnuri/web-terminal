@@ -4,12 +4,13 @@ export interface TerminalTab {
   id: string;
   title: string;
   sessionId: string;
+  cwd?: string;
 }
 
 interface TerminalContextType {
   tabs: TerminalTab[];
   activeTabId: string | null;
-  addTab: () => void;
+  addTab: (cwd?: string, title?: string) => void;
   removeTab: (id: string) => void;
   setActiveTab: (id: string) => void;
   updateTabTitle: (id: string, title: string) => void;
@@ -50,12 +51,14 @@ export const TerminalProvider: React.FC<TerminalProviderProps> = ({ children }) 
 
   const [activeTabId, setActiveTabId] = useState<string | null>(() => tabs[0]?.id || null);
 
-  const addTab = () => {
+  const addTab = (cwd?: string, title?: string) => {
     tabCounter++;
+    const folderName = cwd ? cwd.split('/').filter(Boolean).pop() : null;
     const newTab: TerminalTab = {
       id: `tab-${tabCounter}`,
-      title: `Terminal ${tabCounter}`,
+      title: title || (folderName ? `${folderName}` : `Terminal ${tabCounter}`),
       sessionId: generateSessionId(),
+      cwd,
     };
 
     setTabs((prevTabs) => [...prevTabs, newTab]);

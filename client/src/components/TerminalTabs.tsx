@@ -1,14 +1,90 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useTerminal } from '../contexts/TerminalContext';
-import Terminal from './Terminal';
+import Terminal, { TerminalHandle } from './Terminal';
+import VirtualKeyboard from './VirtualKeyboard';
+import QuickAccessPanel from './QuickAccessPanel';
 import './TerminalTabs.css';
 
 const TerminalTabs: React.FC = () => {
   const { tabs, activeTabId, addTab, removeTab, setActiveTab } = useTerminal();
+  const terminalRefs = useRef<Map<string, TerminalHandle>>(new Map());
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const tabsContentRef = useRef<HTMLDivElement>(null);
+  const [keyboardHeight, setKeyboardHeight] = React.useState<number>(0);
 
   const handleCloseTab = (e: React.MouseEvent, tabId: string) => {
     e.stopPropagation();
     removeTab(tabId);
+  };
+
+  const handleVirtualKeyPress = (key: string) => {
+    // Send key to active terminal via socket
+    const activeTab = tabs.find((tab) => tab.id === activeTabId);
+    if (activeTab) {
+      const terminalRef = terminalRefs.current.get(activeTab.id);
+      if (terminalRef) {
+        terminalRef.sendInput(key);
+      }
+    }
+  };
+
+  const setTerminalRef = (tabId: string, ref: TerminalHandle | null) => {
+    if (ref) {
+      terminalRefs.current.set(tabId, ref);
+    } else {
+      terminalRefs.current.delete(tabId);
+    }
+  };
+
+  const handleCommand = (command: string) => {
+    // Send command to active terminal
+    const activeTab = tabs.find((tab) => tab.id === activeTabId);
+    if (activeTab) {
+      const terminalRef = terminalRefs.current.get(activeTab.id);
+      if (terminalRef) {
+        terminalRef.sendInput(command);
+      }
+    }
+  };
+
+  // Touch gesture handlers for swipe navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchEndX - touchStartX.current;
+    const deltaY = touchEndY - touchStartY.current;
+
+    // Only trigger swipe if horizontal movement is greater than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      const currentIndex = tabs.findIndex((tab) => tab.id === activeTabId);
+
+      if (deltaX > 0 && currentIndex > 0) {
+        // Swipe right - go to previous tab
+        setActiveTab(tabs[currentIndex - 1].id);
+      } else if (deltaX < 0 && currentIndex < tabs.length - 1) {
+        // Swipe left - go to next tab
+        setActiveTab(tabs[currentIndex + 1].id);
+      }
+    }
+  };
+
+  const handleKeyboardVisibilityChange = (visible: boolean, height: number) => {
+    setKeyboardHeight(visible ? height : 0);
+    
+    // Scroll to bottom when keyboard appears to keep terminal visible
+    if (visible && tabsContentRef.current) {
+      setTimeout(() => {
+        if (tabsContentRef.current) {
+          tabsContentRef.current.scrollTop = tabsContentRef.current.scrollHeight;
+        }
+      }, 300); // Wait for keyboard animation
+    }
   };
 
   return (
@@ -33,25 +109,38 @@ const TerminalTabs: React.FC = () => {
             </div>
           ))}
         </div>
-        <button className="new-tab-button" onClick={addTab} aria-label="New tab">
+        <button className="new-tab-button" onClick={() => addTab()} aria-label="New tab">
           +
         </button>
       </div>
-      <div className="tabs-content">
+      <div
+        className={`tabs-content ${keyboardHeight > 0 ? 'keyboard-visible' : ''}`}
+        ref={tabsContentRef}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        style={{ paddingBottom: keyboardHeight > 0 ? `${keyboardHeight}px` : '0' }}
+      >
         {tabs.map((tab) => (
           <div key={tab.id} className={`tab-pane ${activeTabId === tab.id ? 'active' : ''}`}>
             {activeTabId === tab.id && (
               <Terminal
                 sessionId={tab.sessionId}
+                cwd={tab.cwd}
                 onSessionClosed={() => {
                   // Handle session closed if needed
                   console.log(`Session ${tab.sessionId} closed`);
                 }}
+                ref={(ref) => setTerminalRef(tab.id, ref)}
               />
             )}
           </div>
         ))}
       </div>
+      <VirtualKeyboard 
+        onKeyPress={handleVirtualKeyPress} 
+        onVisibilityChange={handleKeyboardVisibilityChange}
+      />
+      <QuickAccessPanel onCommand={handleCommand} />
     </div>
   );
 };

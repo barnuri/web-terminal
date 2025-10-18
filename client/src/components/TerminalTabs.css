@@ -124,6 +124,11 @@
   position: relative;
   overflow: hidden;
   background-color: var(--terminal-bg);
+  transition: padding-bottom 0.2s ease-out;
+}
+
+.tabs-content.keyboard-visible {
+  overflow-y: auto;
 }
 
 .tab-pane {
@@ -137,4 +142,96 @@
 
 .tab-pane.active {
   display: block;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .tabs-header {
+    padding: 0 4px;
+    min-height: 36px;
+  }
+
+  .tab {
+    min-width: 100px;
+    max-width: 150px;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .tab-title {
+    font-size: 12px;
+  }
+
+  .tab-close {
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+  }
+
+  .new-tab-button {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  .tabs-header {
+    padding: 0 2px;
+    min-height: 32px;
+  }
+
+  .tab {
+    min-width: 80px;
+    max-width: 120px;
+    padding: 4px 8px;
+    gap: 4px;
+  }
+
+  .tab-title {
+    font-size: 11px;
+  }
+
+  .tab-close {
+    width: 22px;
+    height: 22px;
+    font-size: 16px;
+  }
+
+  .new-tab-button {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+}
+
+/* Landscape mobile - reduce vertical space */
+@media (max-height: 500px) and (orientation: landscape) {
+  .tabs-header {
+    min-height: 28px;
+    padding: 0 4px;
+  }
+
+  .tab {
+    padding: 3px 8px;
+  }
+
+  .new-tab-button {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (pointer: coarse) {
+  .tab-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .new-tab-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }

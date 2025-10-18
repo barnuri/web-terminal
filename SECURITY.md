@@ -1,254 +1,93 @@
 # Security Policy
 
-## Supported Versions
+## Reporting Security Issues
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
+If you discover a security vulnerability in Web Terminal, please report it privately to the maintainers. Do not open a public issue.
 
-## Security Considerations
+## Security Best Practices
 
-This application provides terminal access through a web browser. As such, it requires careful security considerations before deployment, especially in production environments.
+### 1. SESSION_SECRET
 
-### Critical Security Warnings
+**CRITICAL**: The `SESSION_SECRET` environment variable is used for:
+- JWT token signing
+- Session management
+- Authentication security
 
-1. **Authentication Required**: This application does NOT include built-in authentication. Do NOT expose it to the public internet without implementing proper authentication.
+**Required Actions:**
+- Generate a strong secret: `openssl rand -base64 32`
+- Never use the default value in production
+- Never commit secrets to version control
+- Rotate secrets regularly (quarterly recommended)
 
-2. **Path Restrictions**: Always configure `TERMINAL_ALLOWED_PATH` to restrict access to specific directories only.
+### 2. Authentication
 
-3. **HTTPS Only**: Always serve this application over HTTPS in production to protect data in transit.
+- Enable `AUTH_ENABLE=true` when exposing to the internet
+- Configure OAuth (Google/GitHub) or use `AUTH_STATIC_SECRET`
+- Use `AUTH_ALLOWED_EMAILS` to restrict access to specific users
+- Keep OAuth client secrets secure
 
-4. **Session Secret**: Always change the default `SESSION_SECRET` to a strong, random value.
+### 3. Terminal Access
 
-5. **Network Isolation**: Deploy behind a firewall and restrict access to trusted networks only.
+- Set `TERMINAL_ALLOWED_PATH` to restrict file system access
+- Use the most restrictive path possible for your use case
+- Never set to `/` in production unless absolutely necessary
+- Consider user-specific path restrictions
 
-## Built-in Security Features
+### 4. Network Security
 
-### Path Validation
+- Always use HTTPS in production
+- Deploy behind a reverse proxy (nginx, Apache)
+- Enable firewall rules to restrict access
+- Consider IP whitelisting for sensitive deployments
+- Use rate limiting to prevent abuse
 
-The terminal service validates and restricts access to directories specified in `TERMINAL_ALLOWED_PATH`. Users cannot navigate outside this directory tree.
+### 5. Dependencies
 
-```typescript
-// Example configuration
-TERMINAL_ALLOWED_PATH=/home/username
-```
+- Regularly update dependencies: `npm audit`
+- Review security advisories
+- Test updates in development before production
+- Keep Node.js version up to date
 
-### Session Isolation
+### 6. Deployment
 
-Each WebSocket client maintains isolated terminal sessions. Sessions are destroyed when clients disconnect.
+- Use `NODE_ENV=production`
+- Disable debug logging in production
+- Set appropriate session timeouts
+- Limit maximum concurrent sessions
+- Monitor for suspicious activity
 
-### Input Sanitization
+## Default Security Warnings
 
-User input is passed directly to the terminal session without modification, as this is required for terminal functionality. Implement additional input validation if needed.
+The application will warn you if:
+- `SESSION_SECRET` is not set (using insecure default)
+- Authentication is disabled in production
+- Default or weak secrets are detected
 
-## Recommended Security Measures
+**Do not ignore these warnings!**
 
-### 1. Implement Authentication
+## Security Checklist for Production
 
-Add user authentication before granting terminal access. Consider:
+- [ ] `SESSION_SECRET` is set to a strong, randomly generated value
+- [ ] `AUTH_ENABLE=true` if exposing to internet
+- [ ] OAuth or static secret authentication is configured
+- [ ] `AUTH_ALLOWED_EMAILS` is properly configured
+- [ ] `TERMINAL_ALLOWED_PATH` is restrictive
+- [ ] HTTPS is enabled
+- [ ] Reverse proxy is configured
+- [ ] Firewall rules are in place
+- [ ] Dependencies are up to date
+- [ ] Monitoring and logging are enabled
 
-- OAuth2/OIDC (Google, GitHub, etc.)
-- LDAP/Active Directory
-- Basic Auth over HTTPS
-- JWT-based authentication
+## Known Security Considerations
 
-### 2. Network Security
+1. **Terminal Access**: This application provides direct terminal access. Only deploy in trusted environments or with proper authentication.
 
-```nginx
-# Nginx example: Restrict to specific IPs
-location / {
-    allow 192.168.1.0/24;
-    deny all;
-    proxy_pass http://localhost:3000;
-}
-```
+2. **WebSocket Security**: WebSocket connections are authenticated via JWT tokens passed in the handshake.
 
-### 3. Rate Limiting
+3. **Session Persistence**: Terminal sessions persist for 30 minutes by default. Adjust `TERMINAL_SESSION_TIMEOUT` as needed.
 
-Implement rate limiting to prevent abuse:
+4. **OAuth Tokens**: OAuth access tokens are not stored; only JWTs signed with your `SESSION_SECRET` are used.
 
-```typescript
-// NestJS example
-import { ThrottlerModule } from '@nestjs/throttler';
+## Questions?
 
-@Module({
-  imports: [
-    ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
-    }),
-  ],
-})
-```
-
-### 4. Command Auditing
-
-Log all commands executed through the terminal:
-
-```typescript
-// Example logging
-ptyProcess.onData((data) => {
-  logger.log(`Session ${sessionId}: ${data}`);
-  onData(data);
-});
-```
-
-### 5. Session Timeout
-
-Implement automatic session timeout for idle connections:
-
-```typescript
-// Example timeout implementation
-const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
-setTimeout(() => {
-  destroySession(sessionId);
-}, SESSION_TIMEOUT);
-```
-
-### 6. Firewall Rules
-
-```bash
-# UFW example
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow from 192.168.1.0/24 to any port 3000
-sudo ufw enable
-```
-
-### 7. User Isolation
-
-If supporting multiple users, ensure proper user isolation:
-
-- Run terminal sessions as specific users
-- Use Linux namespaces or containers
-- Implement proper file permissions
-
-### 8. SSL/TLS Configuration
-
-Always use HTTPS with strong ciphers:
-
-```nginx
-ssl_protocols TLSv1.2 TLSv1.3;
-ssl_ciphers HIGH:!aNULL:!MD5;
-ssl_prefer_server_ciphers on;
-```
-
-### 9. Content Security Policy
-
-Add CSP headers:
-
-```typescript
-// NestJS example
-app.use((req, res, next) => {
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
-  );
-  next();
-});
-```
-
-### 10. Regular Updates
-
-Keep dependencies updated:
-
-```bash
-npm audit
-npm update
-```
-
-## Reporting a Vulnerability
-
-If you discover a security vulnerability, please follow these steps:
-
-1. **Do NOT** open a public issue
-2. Email the maintainers privately at [security@example.com]
-3. Include:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Potential impact
-   - Suggested fix (if any)
-
-We will respond within 48 hours and work with you to address the issue.
-
-## Security Best Practices for Deployment
-
-### Production Checklist
-
-- [ ] Change `SESSION_SECRET` to a strong random value
-- [ ] Configure `TERMINAL_ALLOWED_PATH` to restrict access
-- [ ] Implement user authentication
-- [ ] Deploy behind HTTPS
-- [ ] Configure firewall rules
-- [ ] Set up rate limiting
-- [ ] Enable command auditing
-- [ ] Implement session timeouts
-- [ ] Configure proper CORS settings
-- [ ] Set up monitoring and alerts
-- [ ] Regular security updates
-- [ ] Backup critical data
-- [ ] Document security procedures
-- [ ] Train administrators
-
-### Environment Variables Security
-
-Never commit `.env` files to version control:
-
-```bash
-# .gitignore
-.env
-.env.local
-.env.production
-```
-
-Use environment variable management systems in production:
-- AWS Secrets Manager
-- HashiCorp Vault
-- Kubernetes Secrets
-- Environment-specific config files
-
-### Docker Security
-
-If using Docker:
-
-```dockerfile
-# Run as non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nodejs -u 1001
-USER nodejs
-
-# Read-only root filesystem
-RUN chmod -R 555 /app
-
-# Drop capabilities
---cap-drop=ALL
-```
-
-### Monitoring and Alerts
-
-Set up monitoring for:
-- Failed authentication attempts
-- Suspicious command patterns
-- High resource usage
-- Unusual connection patterns
-- Error rates
-
-## Compliance Considerations
-
-Depending on your use case, consider:
-
-- **GDPR**: If handling EU user data
-- **HIPAA**: If handling healthcare data
-- **SOC 2**: For enterprise deployments
-- **PCI DSS**: If handling payment data
-
-## Additional Resources
-
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Node.js Security Best Practices](https://nodejs.org/en/docs/guides/security/)
-- [NestJS Security](https://docs.nestjs.com/security/authentication)
-- [WebSocket Security](https://devcenter.heroku.com/articles/websocket-security)
-
-## Disclaimer
-
-This application is provided as-is without warranty. Users are responsible for implementing appropriate security measures for their specific use case and environment.
+For security questions or concerns, please open a private security advisory on GitHub or contact the maintainers directly.
