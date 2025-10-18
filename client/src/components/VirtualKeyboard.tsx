@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './VirtualKeyboard.css';
 
 interface VirtualKeyboardProps {
   onKeyPress: (key: string) => void;
+  onVisibilityChange?: (visible: boolean, height: number) => void;
 }
 
-const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
+const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onVisibilityChange }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [ctrlPressed, setCtrlPressed] = useState(false);
   const [shiftPressed, setShiftPressed] = useState(false);
   const [longPressKey, setLongPressKey] = useState<string | null>(null);
   const longPressTimer = React.useRef<NodeJS.Timeout | null>(null);
+  const keyboardRef = useRef<HTMLDivElement>(null);
 
   const keys = [
     { label: 'Tab', value: '\t', baseValue: '\t', shiftValue: '\x1b[Z', class: 'key-wide', supportsModifiers: true },
@@ -78,13 +80,32 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
   };
 
   const toggleVisibility = () => {
-    setIsVisible(!isVisible);
+    const newVisibility = !isVisible;
+    setIsVisible(newVisibility);
     // Reset modifiers when hiding
     if (isVisible) {
       setCtrlPressed(false);
       setShiftPressed(false);
     }
   };
+
+  // Notify parent of visibility changes and keyboard height
+  useEffect(() => {
+    if (onVisibilityChange) {
+      if (isVisible && keyboardRef.current) {
+        // Wait for the animation to complete before measuring
+        const timer = setTimeout(() => {
+          if (keyboardRef.current) {
+            const height = keyboardRef.current.offsetHeight;
+            onVisibilityChange(true, height);
+          }
+        }, 250); // Match the animation duration
+        return () => clearTimeout(timer);
+      } else {
+        onVisibilityChange(false, 0);
+      }
+    }
+  }, [isVisible, onVisibilityChange]);
 
   const handleKeyTouchStart = (key: typeof keys[0]) => {
     longPressTimer.current = setTimeout(() => {
@@ -116,7 +137,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
   }
 
   return (
-    <div className="virtual-keyboard">
+    <div className="virtual-keyboard" ref={keyboardRef}>
       <div className="keyboard-header">
         <span className="keyboard-title">Terminal Keys</span>
         <button

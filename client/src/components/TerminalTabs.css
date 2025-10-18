@@ -124,6 +124,11 @@
   position: relative;
   overflow: hidden;
   background-color: var(--terminal-bg);
+  transition: padding-bottom 0.2s ease-out;
+}
+
+.tabs-content.keyboard-visible {
+  overflow-y: auto;
 }
 
 .tab-pane {

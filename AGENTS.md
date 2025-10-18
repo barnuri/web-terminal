@@ -356,22 +356,30 @@ export class AuthService {
 
 ### 1. Environment Variables
 - **Never commit** `.env` to version control
-- Use strong, random JWT secret: `openssl rand -base64 32`
+- Use strong, random session secret: `openssl rand -base64 32`
+- Set `SESSION_SECRET` environment variable (used for JWT signing)
 - Rotate secrets regularly in production
 - Use different credentials for dev/staging/production
 
 ### 2. JWT Configuration
+The JWT configuration uses `SESSION_SECRET` from environment variables:
 ```typescript
-// auth.module.ts
-JwtModule.register({
-  secret: process.env.JWT_SECRET || 'change-this-secret',
-  signOptions: {
-    expiresIn: '7d', // Adjust based on security requirements
-    issuer: 'web-terminal',
-    audience: 'web-terminal-client',
-  },
-})
+// auth.module.ts - Actual implementation
+JwtModule.registerAsync({
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: async (configService: ConfigService) => ({
+    secret: configService.get<string>('session.secret'), // Uses SESSION_SECRET env var
+    signOptions: {
+      expiresIn: '7d',
+      issuer: 'web-terminal',
+      audience: 'web-terminal-client',
+    },
+  }),
+}),
 ```
+
+**Note:** The secret comes from `SESSION_SECRET` environment variable via `configuration.ts`, not a separate `JWT_SECRET` variable.
 
 
 ### 3. Rate Limiting
@@ -891,10 +899,13 @@ describe('Authentication E2E', () => {
 PORT=3000
 NODE_ENV=production
 
+# Security - CRITICAL!
+# Generate with: openssl rand -base64 32
+SESSION_SECRET=your-very-strong-secret-here
+
 # Authentication
 AUTH_ENABLE=true
 AUTH_ALLOWED_EMAILS=user1@company.com,user2@company.com
-JWT_SECRET=your-very-strong-secret-here
 
 # OAuth - Google
 GOOGLE_CLIENT_ID=your-production-client-id
@@ -940,7 +951,7 @@ TERMINAL_MAX_SESSIONS=10
 ## Maintenance
 
 ### Regular Tasks
-- Review and rotate JWT secrets quarterly
+- Review and rotate SESSION_SECRET (used for JWT signing) quarterly
 - Update OAuth application URLs when domains change
 - Monitor authentication success/failure rates
 - Review allowlist and remove inactive users

@@ -150,9 +150,12 @@ web-terminal/
 
 ## Security
 
-- Never commit `.env` files
+- **Never commit `.env` files or real secrets**
+- Always use `SESSION_SECRET` environment variable, never hardcode
+- Generate strong secrets with: `openssl rand -base64 32`
 - Validate all user inputs
 - Follow path access restrictions
+- Test authentication flows when modifying auth code
 - Report security issues privately to maintainers
 
 ## Questions?
