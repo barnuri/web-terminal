@@ -9,13 +9,6 @@ import ngrok from '@ngrok/ngrok';
 import { UrlService } from './services';
 
 async function bootstrap() {
-  const envPath = path.resolve(__dirname, '../.env');
-  const envExamplePath = path.resolve(__dirname, '../.env.example');
-
-  if (!fs.existsSync(envPath)) {
-    fs.copyFileSync(envExamplePath, envPath);
-  }
-
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule, {
