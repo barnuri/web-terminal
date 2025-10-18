@@ -11,6 +11,7 @@ const TerminalTabs: React.FC = () => {
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
   const tabsContentRef = useRef<HTMLDivElement>(null);
+  const [keyboardHeight, setKeyboardHeight] = React.useState<number>(0);
 
   const handleCloseTab = (e: React.MouseEvent, tabId: string) => {
     e.stopPropagation();
@@ -73,6 +74,19 @@ const TerminalTabs: React.FC = () => {
     }
   };
 
+  const handleKeyboardVisibilityChange = (visible: boolean, height: number) => {
+    setKeyboardHeight(visible ? height : 0);
+    
+    // Scroll to bottom when keyboard appears to keep terminal visible
+    if (visible && tabsContentRef.current) {
+      setTimeout(() => {
+        if (tabsContentRef.current) {
+          tabsContentRef.current.scrollTop = tabsContentRef.current.scrollHeight;
+        }
+      }, 300); // Wait for keyboard animation
+    }
+  };
+
   return (
     <div className="terminal-tabs-container">
       <div className="tabs-header">
@@ -100,10 +114,11 @@ const TerminalTabs: React.FC = () => {
         </button>
       </div>
       <div
-        className="tabs-content"
+        className={`tabs-content ${keyboardHeight > 0 ? 'keyboard-visible' : ''}`}
         ref={tabsContentRef}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        style={{ paddingBottom: keyboardHeight > 0 ? `${keyboardHeight}px` : '0' }}
       >
         {tabs.map((tab) => (
           <div key={tab.id} className={`tab-pane ${activeTabId === tab.id ? 'active' : ''}`}>
@@ -121,7 +136,10 @@ const TerminalTabs: React.FC = () => {
           </div>
         ))}
       </div>
-      <VirtualKeyboard onKeyPress={handleVirtualKeyPress} />
+      <VirtualKeyboard 
+        onKeyPress={handleVirtualKeyPress} 
+        onVisibilityChange={handleKeyboardVisibilityChange}
+      />
       <QuickAccessPanel onCommand={handleCommand} />
     </div>
   );
