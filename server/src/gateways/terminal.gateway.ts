@@ -31,7 +31,7 @@ interface InputPayload {
 
 @WebSocketGateway({
   cors: {
-    origin: (_origin, callback) => {
+    origin: (_origin: any, callback: (error: Error | null, success: boolean) => void) => {
       // In development, allow configured origin
       // In production, implement proper origin validation
       callback(null, true);

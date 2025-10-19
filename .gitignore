@@ -55,3 +55,4 @@ Thumbs.db
 # Cloudflare Tunnel
 .cloudflared/credentials.json
 cloudflare-tunnel.yml
+**/package-lock.json
