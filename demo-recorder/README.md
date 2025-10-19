@@ -13,6 +13,8 @@ Automated demo recording tool for Web Terminal using Puppeteer.
 
 2. Install demo-recorder dependencies:
    ```bash
+   brew install ffmpeg
+   brew install gifsicle
    npm install
    ```
 

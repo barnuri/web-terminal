@@ -4,7 +4,10 @@
     "description": "Automated demo recording script for Web Terminal",
     "private": true,
     "scripts": {
-        "start": "node record-automated-demo.js"
+        "start": "node record-automated-demo.js",
+        "create-gif": "rm -rf ../assets/demo.gif && ffmpeg -i ../assets/demo.mp4 ../assets/demo.gif -vf \"fps=30,scale=1200:-1:flags=lanczos\"",
+        "optimize-gif": "gifsicle -O3 --lossy=80 -o ../assets/demo.gif ../assets/demo.gif",
+        "poststart": "npm run create-gif && npm run optimize-gif"
     },
     "dependencies": {
         "dotenv": "^17.2.3",
