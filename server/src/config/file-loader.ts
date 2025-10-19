@@ -72,13 +72,13 @@ export function mergeConfig(
   }
 
   // Deep merge: env vars override file config
-  return deepMergeObjects(fileConfig, envConfig);
+  return deepMerge(fileConfig, envConfig);
 }
 
 /**
  * Deep merge two objects, with priority to the second object
  */
-function deepMergeObjects(target: any, source: any): any {
+export function deepMerge(target: any, source: any): any {
   if (!source || typeof source !== 'object') {
     return target;
   }
@@ -99,7 +99,7 @@ function deepMergeObjects(target: any, source: any): any {
         typeof sourceValue === 'object' &&
         !Array.isArray(sourceValue)
       ) {
-        result[key] = deepMergeObjects(targetValue, sourceValue);
+        result[key] = deepMerge(targetValue, sourceValue);
       } else {
         // Otherwise, source value takes precedence
         result[key] = sourceValue;
