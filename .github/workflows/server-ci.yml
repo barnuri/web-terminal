@@ -30,7 +30,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: server
-        run: npm ci --legacy-peer-deps
+        run: npm i --legacy-peer-deps
 
       - name: Run unit tests
         working-directory: server
