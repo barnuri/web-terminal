@@ -141,10 +141,10 @@ describe('Configuration', () => {
       const config = configuration();
       expect(config.session.secret).toBe('INSECURE-DEFAULT-DO-NOT-USE-IN-PRODUCTION');
       expect(warnSpy).toHaveBeenCalledWith(
-        '⚠️  WARNING: SESSION_SECRET is not set! Using insecure default. This is NOT safe for production!'
+        '⚠️  WARNING: SESSION_SECRET is not set! Using insecure default. This is NOT safe for production!',
       );
       expect(warnSpy).toHaveBeenCalledWith(
-        '⚠️  Generate a secure secret with: openssl rand -base64 32'
+        '⚠️  Generate a secure secret with: openssl rand -base64 32',
       );
       warnSpy.mockRestore();
     });

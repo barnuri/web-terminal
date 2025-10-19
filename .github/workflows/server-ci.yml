@@ -1,4 +1,4 @@
-name: Server CI
+name: Server
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build and Test Server
+    name: Server - Build and Test 
     runs-on: ubuntu-latest
 
     steps:
@@ -32,10 +32,11 @@ jobs:
         working-directory: server
         run: npm i --legacy-peer-deps
 
+      - name: Build server
+        working-directory: server
+        run: npm run build
+        
       - name: Run unit tests
         working-directory: server
         run: npm test
 
-      - name: Build server
-        working-directory: server
-        run: npm run build
