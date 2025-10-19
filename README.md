@@ -2,6 +2,12 @@
 
 A comprehensive web-based terminal application built with NestJS, React, and xterm.js. This application provides a full-featured terminal interface accessible through your web browser with multi-tab support, dark/light themes, and configurable access controls.
 
+## Demo
+
+![Demo](assets/demo.mp4)
+
+> **Note**: If the video doesn't play on GitHub, you can download it from the [assets folder](assets/demo.mp4) or view it locally.
+
 ## Features
 
 - **Full Terminal Emulation**: Powered by xterm.js with WebSocket communication
@@ -64,10 +70,12 @@ nano .env
 **Important Environment Variables:**
 
 **Server Configuration:**
+
 - `PORT`: Server port (default: 3000)
 - `NODE_ENV`: Environment mode (development/production)
 
 **Terminal Configuration:**
+
 - `TERMINAL_SHELL`: Shell to use (default: /bin/zsh)
 - `TERMINAL_ALLOWED_PATH`: Base directory for terminal access (default: ~)
 - `TERMINAL_SESSION_TIMEOUT`: Session timeout in milliseconds (default: 1800000 = 30 min)
@@ -76,26 +84,31 @@ nano .env
 - `FAV_CMDS`: Comma-separated list of favorite commands
 
 **Security (REQUIRED for production):**
+
 - `SESSION_SECRET`: Secret for JWT tokens and session management
   - **CRITICAL**: Must be changed in production!
   - Generate with: `openssl rand -base64 32`
 
 **Authentication (Optional):**
+
 - `AUTH_ENABLE`: Enable authentication (true/false, default: false)
 - `AUTH_ALLOWED_EMAILS`: Comma-separated list of allowed email addresses
 - `AUTH_STATIC_SECRET`: Simple password-based authentication (alternative to OAuth)
 
 **OAuth - Google (Optional):**
+
 - `GOOGLE_CLIENT_ID`: Google OAuth client ID
 - `GOOGLE_CLIENT_SECRET`: Google OAuth client secret
 - `GOOGLE_CALLBACK_URL`: Google OAuth callback URL
 
 **OAuth - GitHub (Optional):**
+
 - `GITHUB_CLIENT_ID`: GitHub OAuth client ID
 - `GITHUB_CLIENT_SECRET`: GitHub OAuth client secret
 - `GITHUB_CALLBACK_URL`: GitHub OAuth callback URL
 
 **Other:**
+
 - `NGROK_AUTHTOKEN`: Ngrok auth token for exposing local server (optional)
 
 ### 3. Development Mode
@@ -139,6 +152,7 @@ Web Terminal supports multiple configuration methods with the following priority
 Create a configuration file in YAML or JSON format:
 
 **YAML format (config.yaml):**
+
 ```yaml
 port: 3000
 nodeEnv: production
@@ -162,6 +176,7 @@ auth:
 ```
 
 **JSON format (config.json):**
+
 ```json
 {
   "port": 3000,
@@ -185,10 +200,12 @@ auth:
 ```
 
 **Example files are provided:**
+
 - Copy `config.example.yaml` to `config.yaml` and customize
 - Or copy `config.example.json` to `config.json` and customize
 
 **Environment-specific configuration:**
+
 - `config.development.yaml` - Loaded when NODE_ENV=development
 - `config.production.yaml` - Loaded when NODE_ENV=production
 - `config.local.yaml` - Local overrides (gitignored, highest priority)
@@ -260,7 +277,7 @@ The `TERMINAL_ALLOWED_PATH` variable restricts terminal access to a specific dir
 
 ### For Production Deployment:
 
-1. **⚠️ CRITICAL - Change SESSION_SECRET**: 
+1. **⚠️ CRITICAL - Change SESSION_SECRET**:
    - The default value is INSECURE and will show warnings
    - Generate a secure secret: `openssl rand -base64 32`
    - Never commit the actual secret to version control

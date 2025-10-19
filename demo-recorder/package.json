@@ -1,0 +1,14 @@
+{
+    "name": "demo-recorder",
+    "version": "1.0.0",
+    "description": "Automated demo recording script for Web Terminal",
+    "private": true,
+    "scripts": {
+        "start": "node record-automated-demo.js"
+    },
+    "dependencies": {
+        "dotenv": "^17.2.3",
+        "puppeteer": "^24.25.0",
+        "puppeteer-screen-recorder": "^3.0.6"
+    }
+}
