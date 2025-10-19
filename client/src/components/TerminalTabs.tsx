@@ -76,7 +76,7 @@ const TerminalTabs: React.FC = () => {
 
   const handleKeyboardVisibilityChange = (visible: boolean, height: number) => {
     setKeyboardHeight(visible ? height : 0);
-    
+
     // Scroll to bottom when keyboard appears to keep terminal visible
     if (visible && tabsContentRef.current) {
       setTimeout(() => {
@@ -136,8 +136,8 @@ const TerminalTabs: React.FC = () => {
           </div>
         ))}
       </div>
-      <VirtualKeyboard 
-        onKeyPress={handleVirtualKeyPress} 
+      <VirtualKeyboard
+        onKeyPress={handleVirtualKeyPress}
         onVisibilityChange={handleKeyboardVisibilityChange}
       />
       <QuickAccessPanel onCommand={handleCommand} />

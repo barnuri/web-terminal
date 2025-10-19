@@ -15,7 +15,14 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onVisibil
   const keyboardRef = useRef<HTMLDivElement>(null);
 
   const keys = [
-    { label: 'Tab', value: '\t', baseValue: '\t', shiftValue: '\x1b[Z', class: 'key-wide', supportsModifiers: true },
+    {
+      label: 'Tab',
+      value: '\t',
+      baseValue: '\t',
+      shiftValue: '\x1b[Z',
+      class: 'key-wide',
+      supportsModifiers: true,
+    },
     { label: 'Esc', value: '\x1b', class: 'key-normal', supportsModifiers: false },
     { label: '↑', value: '\x1b[A', class: 'key-normal', supportsModifiers: false },
     { label: '↓', value: '\x1b[B', class: 'key-normal', supportsModifiers: false },
@@ -27,22 +34,126 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onVisibil
     { label: 'Ctrl+L', value: '\x0c', class: 'key-normal', supportsModifiers: false },
     { label: 'Home', value: '\x1b[H', class: 'key-normal', supportsModifiers: false },
     { label: 'End', value: '\x1b[F', class: 'key-normal', supportsModifiers: false },
-    { label: 'A', value: 'a', baseValue: 'a', ctrlValue: '\x01', shiftValue: 'A', class: 'key-normal', supportsModifiers: true },
-    { label: 'B', value: 'b', baseValue: 'b', ctrlValue: '\x02', shiftValue: 'B', class: 'key-normal', supportsModifiers: true },
-    { label: 'C', value: 'c', baseValue: 'c', ctrlValue: '\x03', shiftValue: 'C', class: 'key-normal', supportsModifiers: true },
-    { label: 'D', value: 'd', baseValue: 'd', ctrlValue: '\x04', shiftValue: 'D', class: 'key-normal', supportsModifiers: true },
-    { label: 'E', value: 'e', baseValue: 'e', ctrlValue: '\x05', shiftValue: 'E', class: 'key-normal', supportsModifiers: true },
-    { label: 'F', value: 'f', baseValue: 'f', ctrlValue: '\x06', shiftValue: 'F', class: 'key-normal', supportsModifiers: true },
-    { label: 'G', value: 'g', baseValue: 'g', ctrlValue: '\x07', shiftValue: 'G', class: 'key-normal', supportsModifiers: true },
-    { label: 'K', value: 'k', baseValue: 'k', ctrlValue: '\x0b', shiftValue: 'K', class: 'key-normal', supportsModifiers: true },
-    { label: 'L', value: 'l', baseValue: 'l', ctrlValue: '\x0c', shiftValue: 'L', class: 'key-normal', supportsModifiers: true },
-    { label: 'R', value: 'r', baseValue: 'r', ctrlValue: '\x12', shiftValue: 'R', class: 'key-normal', supportsModifiers: true },
-    { label: 'U', value: 'u', baseValue: 'u', ctrlValue: '\x15', shiftValue: 'U', class: 'key-normal', supportsModifiers: true },
-    { label: 'W', value: 'w', baseValue: 'w', ctrlValue: '\x17', shiftValue: 'W', class: 'key-normal', supportsModifiers: true },
-    { label: 'Z', value: 'z', baseValue: 'z', ctrlValue: '\x1a', shiftValue: 'Z', class: 'key-normal', supportsModifiers: true },
+    {
+      label: 'A',
+      value: 'a',
+      baseValue: 'a',
+      ctrlValue: '\x01',
+      shiftValue: 'A',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'B',
+      value: 'b',
+      baseValue: 'b',
+      ctrlValue: '\x02',
+      shiftValue: 'B',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'C',
+      value: 'c',
+      baseValue: 'c',
+      ctrlValue: '\x03',
+      shiftValue: 'C',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'D',
+      value: 'd',
+      baseValue: 'd',
+      ctrlValue: '\x04',
+      shiftValue: 'D',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'E',
+      value: 'e',
+      baseValue: 'e',
+      ctrlValue: '\x05',
+      shiftValue: 'E',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'F',
+      value: 'f',
+      baseValue: 'f',
+      ctrlValue: '\x06',
+      shiftValue: 'F',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'G',
+      value: 'g',
+      baseValue: 'g',
+      ctrlValue: '\x07',
+      shiftValue: 'G',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'K',
+      value: 'k',
+      baseValue: 'k',
+      ctrlValue: '\x0b',
+      shiftValue: 'K',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'L',
+      value: 'l',
+      baseValue: 'l',
+      ctrlValue: '\x0c',
+      shiftValue: 'L',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'R',
+      value: 'r',
+      baseValue: 'r',
+      ctrlValue: '\x12',
+      shiftValue: 'R',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'U',
+      value: 'u',
+      baseValue: 'u',
+      ctrlValue: '\x15',
+      shiftValue: 'U',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'W',
+      value: 'w',
+      baseValue: 'w',
+      ctrlValue: '\x17',
+      shiftValue: 'W',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
+    {
+      label: 'Z',
+      value: 'z',
+      baseValue: 'z',
+      ctrlValue: '\x1a',
+      shiftValue: 'Z',
+      class: 'key-normal',
+      supportsModifiers: true,
+    },
   ];
 
-  const handleKeyPress = (key: typeof keys[0]) => {
+  const handleKeyPress = (key: (typeof keys)[0]) => {
     let value = key.value;
 
     if (key.supportsModifiers) {
@@ -107,7 +218,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onVisibil
     }
   }, [isVisible, onVisibilityChange]);
 
-  const handleKeyTouchStart = (key: typeof keys[0]) => {
+  const handleKeyTouchStart = (key: (typeof keys)[0]) => {
     longPressTimer.current = setTimeout(() => {
       setLongPressKey(key.label);
       // Vibrate if supported
@@ -117,7 +228,7 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onVisibil
     }, 500);
   };
 
-  const handleKeyTouchEnd = (key: typeof keys[0]) => {
+  const handleKeyTouchEnd = (key: (typeof keys)[0]) => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
@@ -130,7 +241,11 @@ const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ onKeyPress, onVisibil
 
   if (!isVisible) {
     return (
-      <button className="virtual-keyboard-toggle" onClick={toggleVisibility} aria-label="Show virtual keyboard">
+      <button
+        className="virtual-keyboard-toggle"
+        onClick={toggleVisibility}
+        aria-label="Show virtual keyboard"
+      >
         ⌨️
       </button>
     );
