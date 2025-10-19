@@ -4,9 +4,7 @@ A comprehensive web-based terminal application built with NestJS, React, and xte
 
 ## Demo
 
-<video width="100%" controls autoplay loop muted>
-  <source src="https://raw.githubusercontent.com/barnuri/web-terminal/refs/heads/master/assets/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag. <a href="https://raw.githubusercontent.com/barnuri/web-terminal/refs/heads/master/assets/demo.mp4">Download the demo video</a>.
+<video width="100%" controls autoplay loop muted src="https://raw.githubusercontent.com/barnuri/web-terminal/refs/heads/master/assets/demo.mp4">
 </video>
 
 ## Features
