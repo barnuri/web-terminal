@@ -1,10 +1,16 @@
-require('dotenv').config();
+import path from 'path';
+import fs from 'fs';
+
+if (fs.existsSync(`${process.cwd()}/.env`)) {
+  require('dotenv').config({ path: path.resolve(process.cwd(), '.env') });
+} else if (fs.existsSync(`${process.cwd()}/../.env`)) {
+  require('dotenv').config({ path: path.resolve(process.cwd(), '../.env') });
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import path from 'path';
-import fs from 'fs';
 import ngrok from '@ngrok/ngrok';
 import { UrlService } from './services';
 

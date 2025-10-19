@@ -2,18 +2,8 @@ import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import * as yaml from 'js-yaml';
 
-/**
- * Loads configuration from YAML or JSON files
- * Priority order:
- * 1. config.local.yaml / config.local.json (for local overrides, gitignored)
- * 2. config.{NODE_ENV}.yaml / config.{NODE_ENV}.json (environment-specific)
- * 3. config.yaml / config.json (default config)
- * 4. Environment variables (fallback)
- */
-export function loadConfigFile(): Record<string, any> | null {
+function findConfigFile(folder: string) {
   const nodeEnv = process.env.NODE_ENV || 'development';
-  const configDir = join(process.cwd());
-
   // List of config files to try in priority order
   const configFiles = [
     // Local overrides (highest priority)
@@ -31,7 +21,7 @@ export function loadConfigFile(): Record<string, any> | null {
   ];
 
   for (const filename of configFiles) {
-    const filepath = join(configDir, filename);
+    const filepath = join(folder, filename);
 
     if (existsSync(filepath)) {
       try {
@@ -54,9 +44,29 @@ export function loadConfigFile(): Record<string, any> | null {
       }
     }
   }
+  return undefined;
+}
 
-  console.log('ℹ No configuration file found, using environment variables');
-  return null;
+/**
+ * Loads configuration from YAML or JSON files
+ * Priority order:
+ * 1. config.local.yaml / config.local.json (for local overrides, gitignored)
+ * 2. config.{NODE_ENV}.yaml / config.{NODE_ENV}.json (environment-specific)
+ * 3. config.yaml / config.json (default config)
+ * 4. Environment variables (fallback)
+ */
+export function loadConfigFile(): Record<string, any> | null {
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  const folder = process.cwd();
+  let config = findConfigFile(folder);
+  if (!config && folder.includes('/server')) {
+    // Try parent folder if in /server (monorepo setup)
+    config = findConfigFile(join(folder, '..'));
+  }
+  if (!config) {
+    console.log('ℹ No configuration file found, using environment variables');
+  }
+  return config;
 }
 
 /**
