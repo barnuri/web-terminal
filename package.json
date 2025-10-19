@@ -3,10 +3,6 @@
     "version": "1.0.0",
     "description": "A comprehensive web-based terminal application with NestJS backend and React frontend",
     "private": true,
-    "workspaces": [
-        "server",
-        "client"
-    ],
     "scripts": {
         "install:all": "npm install && npm install --prefix server && npm install --prefix client",
         "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
