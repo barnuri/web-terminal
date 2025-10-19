@@ -32,6 +32,7 @@ function getDefaults(): any {
   return {
     port: 3000,
     nodeEnv: 'development',
+    ngrok_authtoken: '',
     terminal: {
       shell: '/bin/zsh',
       allowedPath: process.env.HOME || '~',
@@ -73,6 +74,10 @@ function getDefaults(): any {
  */
 function loadEnvConfig(): any {
   const envConfig: any = {};
+
+  if (process.env.NGROK_AUTHTOKEN) {
+    envConfig.ngrok_authtoken = process.env.NGROK_AUTHTOKEN;
+  }
 
   // Port
   if (process.env.PORT) {

@@ -45,11 +45,11 @@ async function bootstrap() {
 
   // Get the UrlService instance to store ngrok URL
   const urlService = app.get(UrlService);
-
-  if (process.env.NGROK_AUTHTOKEN) {
-    ngrok.connect({ addr: port, authtoken: process.env.NGROK_AUTHTOKEN }).then((listener) => {
+  const ngrokAuthtoken = configService.get<string>('ngrok_authtoken');
+  if (ngrokAuthtoken) {
+    ngrok.connect({ addr: port, authtoken: ngrokAuthtoken }).then((listener) => {
       const ngrokUrl = listener.url();
-      console.log(`Ingress established at: ${ngrokUrl}`);
+      logger.log(`Ingress established at: ${ngrokUrl}`);
       // Store the ngrok URL in the shared service
       if (ngrokUrl) {
         urlService.setNgrokUrl(ngrokUrl);

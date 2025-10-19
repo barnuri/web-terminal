@@ -10,6 +10,7 @@
 # Server Configuration
 port: 3000
 nodeEnv: development
+ngrok_authtoken: ''
 
 # Terminal Configuration
 terminal:

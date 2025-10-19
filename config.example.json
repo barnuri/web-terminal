@@ -1,44 +1,45 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$comment": "Web Terminal Configuration File (JSON format). Copy this file to config.json and customize as needed. Configuration priority: 1. Environment variables (highest), 2. config.local.json (gitignored), 3. config.{NODE_ENV}.json, 4. config.json",
-  "port": 3000,
-  "nodeEnv": "development",
-  "terminal": {
-    "shell": "/bin/zsh",
-    "allowedPath": "/home",
-    "sessionTimeout": 1800000,
-    "maxSessions": 10,
-    "folderShortcuts": [
-      "/home/user/projects",
-      "/var/www",
-      "/etc"
-    ],
-    "favoriteCommands": [
-      "git status",
-      "npm test",
-      "docker ps",
-      "kubectl get pods"
-    ]
-  },
-  "session": {
-    "secret": "change-this-to-a-secure-random-string-in-production"
-  },
-  "auth": {
-    "enabled": false,
-    "allowedEmails": [
-      "user1@example.com",
-      "user2@example.com"
-    ],
-    "staticSecret": ""
-  },
-  "google": {
-    "clientId": "",
-    "clientSecret": "",
-    "callbackURL": "http://localhost:3000/auth/google/callback"
-  },
-  "github": {
-    "clientId": "",
-    "clientSecret": "",
-    "callbackURL": "http://localhost:3000/auth/github/callback"
-  }
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$comment": "Web Terminal Configuration File (JSON format). Copy this file to config.json and customize as needed. Configuration priority: 1. Environment variables (highest), 2. config.local.json (gitignored), 3. config.{NODE_ENV}.json, 4. config.json",
+    "port": 3000,
+    "nodeEnv": "development",
+    "ngrok_authtoken": "",
+    "terminal": {
+        "shell": "/bin/zsh",
+        "allowedPath": "/home",
+        "sessionTimeout": 1800000,
+        "maxSessions": 10,
+        "folderShortcuts": [
+            "/home/user/projects",
+            "/var/www",
+            "/etc"
+        ],
+        "favoriteCommands": [
+            "git status",
+            "npm test",
+            "docker ps",
+            "kubectl get pods"
+        ]
+    },
+    "session": {
+        "secret": "change-this-to-a-secure-random-string-in-production"
+    },
+    "auth": {
+        "enabled": false,
+        "allowedEmails": [
+            "user1@example.com",
+            "user2@example.com"
+        ],
+        "staticSecret": ""
+    },
+    "google": {
+        "clientId": "",
+        "clientSecret": "",
+        "callbackURL": "http://localhost:3000/auth/google/callback"
+    },
+    "github": {
+        "clientId": "",
+        "clientSecret": "",
+        "callbackURL": "http://localhost:3000/auth/github/callback"
+    }
 }
