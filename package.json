@@ -4,7 +4,7 @@
     "description": "A comprehensive web-based terminal application with NestJS backend and React frontend",
     "private": true,
     "scripts": {
-        "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+        "install:all": "npm install && npm install --legacy-peer-deps --prefix server && npm install --prefix client",
         "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
         "dev:server": "(cd server && npm run start:dev)",
         "dev:client": "(cd client && npm run dev)",
