@@ -24,13 +24,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
-          cache-dependency-path: 'client/package-lock.json'
+          cache-dependency-path: 'client/package.json'
 
       - name: Install dependencies
         working-directory: client
-        run: npm ci
+        run: npm i
 
       - name: Run unit tests
         working-directory: client

@@ -1,0 +1,71 @@
+# Web Terminal Configuration File (YAML format)
+# Copy this file to config.yaml and customize as needed
+#
+# Configuration priority:
+# 1. Environment variables (highest priority)
+# 2. config.local.yaml/json (gitignored, for local overrides)
+# 3. config.{NODE_ENV}.yaml/json (environment-specific)
+# 4. config.yaml/json (this file)
+
+# Server Configuration
+port: 3000
+nodeEnv: development
+
+# Terminal Configuration
+terminal:
+  # Shell to use (default: /bin/zsh)
+  shell: /bin/zsh
+  
+  # Base directory for terminal access (default: ~)
+  # Examples: /home, /home/username, /var/www
+  allowedPath: /home
+  
+  # Session timeout in milliseconds (default: 1800000 = 30 minutes)
+  sessionTimeout: 1800000
+  
+  # Maximum concurrent sessions per user (default: 10)
+  maxSessions: 10
+  
+  # Folder shortcuts for quick navigation
+  folderShortcuts:
+    - /home/user/projects
+    - /var/www
+    - /etc
+  
+  # Favorite commands for quick access
+  favoriteCommands:
+    - git status
+    - npm test
+    - docker ps
+    - kubectl get pods
+
+# Security Configuration
+session:
+  # CRITICAL: Generate a secure secret for production!
+  # Generate with: openssl rand -base64 32
+  secret: change-this-to-a-secure-random-string-in-production
+
+# Authentication Configuration (Optional)
+auth:
+  # Enable authentication (default: false)
+  enabled: false
+  
+  # List of allowed email addresses (required if auth is enabled)
+  allowedEmails:
+    - user1@example.com
+    - user2@example.com
+  
+  # Static secret for simple password authentication (alternative to OAuth)
+  staticSecret: ""
+
+# OAuth - Google (Optional)
+google:
+  clientId: ""
+  clientSecret: ""
+  callbackURL: http://localhost:3000/auth/google/callback
+
+# OAuth - GitHub (Optional)
+github:
+  clientId: ""
+  clientSecret: ""
+  callbackURL: http://localhost:3000/auth/github/callback

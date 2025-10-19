@@ -125,7 +125,75 @@ The server will serve the React build at `http://localhost:3000`.
 
 ## Configuration
 
-### Environment Variables
+Web Terminal supports multiple configuration methods with the following priority order:
+
+1. **Environment variables** (highest priority)
+2. **config.local.yaml/json** (gitignored, for local overrides)
+3. **config.{NODE_ENV}.yaml/json** (environment-specific)
+4. **config.yaml/json** (default configuration)
+
+### Configuration Methods
+
+#### Method 1: Configuration Files (Recommended)
+
+Create a configuration file in YAML or JSON format:
+
+**YAML format (config.yaml):**
+```yaml
+port: 3000
+nodeEnv: production
+terminal:
+  shell: /bin/zsh
+  allowedPath: /home
+  sessionTimeout: 1800000
+  maxSessions: 10
+  folderShortcuts:
+    - /home/user/projects
+    - /var/www
+  favoriteCommands:
+    - git status
+    - npm test
+session:
+  secret: your-super-secret-key-here-CHANGE-THIS
+auth:
+  enabled: false
+  allowedEmails:
+    - user1@example.com
+```
+
+**JSON format (config.json):**
+```json
+{
+  "port": 3000,
+  "nodeEnv": "production",
+  "terminal": {
+    "shell": "/bin/zsh",
+    "allowedPath": "/home",
+    "sessionTimeout": 1800000,
+    "maxSessions": 10,
+    "folderShortcuts": ["/home/user/projects", "/var/www"],
+    "favoriteCommands": ["git status", "npm test"]
+  },
+  "session": {
+    "secret": "your-super-secret-key-here-CHANGE-THIS"
+  },
+  "auth": {
+    "enabled": false,
+    "allowedEmails": ["user1@example.com"]
+  }
+}
+```
+
+**Example files are provided:**
+- Copy `config.example.yaml` to `config.yaml` and customize
+- Or copy `config.example.json` to `config.json` and customize
+
+**Environment-specific configuration:**
+- `config.development.yaml` - Loaded when NODE_ENV=development
+- `config.production.yaml` - Loaded when NODE_ENV=production
+- `config.local.yaml` - Local overrides (gitignored, highest priority)
+
+#### Method 2: Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -149,6 +217,8 @@ AUTH_ALLOWED_EMAILS=user1@example.com,user2@example.com
 # Ngrok (Optional)
 NGROK_AUTHTOKEN=your-ngrok-authtoken
 ```
+
+**Note:** Environment variables override configuration file values, allowing you to use files for defaults and environment variables for sensitive data or deployment-specific overrides.
 
 ### Supported Shells
 
