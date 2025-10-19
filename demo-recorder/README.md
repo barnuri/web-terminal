@@ -13,9 +13,7 @@ Automated demo recording tool for Web Terminal using Puppeteer.
 
 2. Install demo-recorder dependencies:
    ```bash
-   brew install ffmpeg
-   brew install gifsicle
-   npm install
+   npm install --legacy-peer-deps
    ```
 
 ## Usage
@@ -34,24 +32,11 @@ This will:
 - Navigate to the Web Terminal
 - Perform automated demo actions
 - Record everything to `../assets/demo.mp4`
+- to update README.md with the new video, drag and drop the video into the README.md file in place of the existing demo video in the browser and it will upload the video and generate a link (ex: https://github.com/user-attachments/assets/xxxx
+  ).
 - **Automatically stop the server** when recording is complete
 
 **Note:** The script will build and start the production server, which may take a minute to be ready.
-
-### Option 2: Convert MP4 to GIF
-
-After recording, convert to GIF:
-
-```bash
-# Install ffmpeg if not already installed
-brew install ffmpeg gifsicle
-
-# Convert to GIF (30 FPS, optimized)
-ffmpeg -i ../assets/demo.mp4 -vf "fps=30,scale=1200:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 ../assets/demo.gif
-
-# Optimize GIF
-gifsicle -O3 --lossy=80 -o ../assets/demo-optimized.gif ../assets/demo.gif
-```
 
 ## Customization
 
@@ -89,4 +74,3 @@ Edit `record-automated-demo.js` to customize:
 ## Output
 
 - `../assets/demo.mp4` - Full quality video
-- `../assets/demo.gif` - Optimized GIF for README

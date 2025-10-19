@@ -4,7 +4,6 @@ This directory contains demo materials for the Web Terminal project.
 
 ## Files
 
-- `demo.gif` - Animated GIF demonstration of the web terminal
 - `demo.mp4` - Full video demonstration (if available)
 - `screenshots/` - Static screenshots of key features
 

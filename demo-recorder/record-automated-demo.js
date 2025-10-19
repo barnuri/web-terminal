@@ -409,14 +409,6 @@ async function recordDemo() {
 
     console.log('✅ Demo recording completed!');
     console.log(`📁 Video saved to: ${CONFIG.outputPath}`);
-    console.log('\n📝 Next steps:');
-    console.log('   1. Review the video file');
-    console.log('   2. Convert to GIF if needed:');
-    console.log(
-      `      ffmpeg -i ${CONFIG.outputPath} -vf "fps=30,scale=1200:-1:flags=lanczos" demo.gif`,
-    );
-    console.log('   3. Optimize the GIF:');
-    console.log('      gifsicle -O3 --lossy=80 -o demo-optimized.gif demo.gif');
 
     // Clean up: stop the server
     if (serverProcess) {
